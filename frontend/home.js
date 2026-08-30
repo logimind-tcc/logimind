@@ -13,8 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const aviso = document.getElementById("aviso-cadastro");
 
   if (!botaoCadastrar) {
-    return;
-  }
+    }
 
   function mostrarAviso(mensagem, tipo) {
     aviso.textContent = mensagem;
