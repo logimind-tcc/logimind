@@ -7,9 +7,9 @@
   "scripts": {
    "dev": "node --watch server.js"
   },
-  "keywords": ["logimind", "logistica", "esp32", "automacao"],
+  "keywords": [],
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
