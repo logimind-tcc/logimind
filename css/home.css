@@ -61,19 +61,17 @@
 }
 
 @keyframes varrerFeixe {
-  0%,
-  100% {
-    x2: 299;
-    y2: 196;
+  0% {
+    transform: translateX(0);
     opacity: 0;
   }
-  40% {
-    opacity: 0.9;
+  20%,
+  80% {
+    opacity: 0.85;
   }
-  70% {
-    x2: 170;
-    y2: 200;
-    opacity: 0.9;
+  100% {
+    transform: translateX(88px);
+    opacity: 0;
   }
 }
 
