@@ -1,9 +1,3 @@
-/* ==========================================================
-   LOGIMIND - CSS DA PAGINA DE INSTRUCOES
-   Depende de css/global.css
-   ========================================================== */
-
-/* ---------- TRILHA DE PASSOS ---------- */
 .trilha-passos {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -24,12 +18,6 @@
     box-shadow var(--transicao);
 }
 
-.passo article:hover {
-  transform: translateY(-5px);
-  border-color: var(--cor-azul);
-  box-shadow: 0 16px 32px var(--cor-sombra);
-}
-
 .passo-numero {
   position: absolute;
   top: -18px;
@@ -47,7 +35,6 @@
   box-shadow: 0 6px 16px rgba(19, 88, 227, 0.35);
 }
 
-/* Seta de ligacao entre os passos (desktop) */
 .passo:not(:last-child) article::after {
   content: "";
   position: absolute;
@@ -74,7 +61,6 @@
   font-size: 0.9rem;
 }
 
-/* Realce quando o passo entra na tela (js/instrucao.js) */
 .passo.visivel article {
   animation: surgirPasso 0.5s ease both;
 }
@@ -90,7 +76,6 @@
   }
 }
 
-/* ---------- AREA DE VIDEO ---------- */
 .destaque-lateral {
   border-left: 3px solid var(--cor-azul);
   padding-left: 14px;
@@ -115,12 +100,6 @@
   color: var(--cor-azul);
   cursor: pointer;
   transition: background-color var(--transicao), transform var(--transicao);
-}
-
-.area-video:hover,
-.area-video:focus-visible {
-  transform: scale(1.005);
-  background-color: rgba(19, 88, 227, 0.05);
 }
 
 .video-marcador {
@@ -153,7 +132,6 @@
   border-radius: var(--raio-grande);
 }
 
-/* ---------- RESPONSIVO ---------- */
 @media (max-width: 1000px) {
   .trilha-passos {
     grid-template-columns: repeat(2, 1fr);

@@ -92,12 +92,6 @@
     box-shadow var(--transicao);
 }
 
-.componente:hover {
-  transform: translateY(-3px);
-  border-color: var(--cor-azul);
-  box-shadow: 0 14px 28px var(--cor-sombra);
-}
-
 /* Miniatura da peca: recebe a foto de imagens/ ou o icone desenhado. */
 .componente-miniatura {
   flex-shrink: 0;

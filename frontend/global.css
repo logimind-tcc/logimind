@@ -341,12 +341,6 @@ h4 {
     border-color var(--transicao);
 }
 
-.cartao:hover {
-  transform: translateY(-4px);
-  border-color: var(--cor-azul);
-  box-shadow: 0 14px 30px var(--cor-sombra);
-}
-
 .icone-quadrado {
   width: 44px;
   height: 44px;
