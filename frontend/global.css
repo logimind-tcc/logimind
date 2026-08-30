@@ -183,15 +183,17 @@ h4 {
 .cabecalho-interno {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 20px;
   min-height: 72px;
+  
 }
 
 .marca {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-shrink: 0;
   font-family: var(--fonte-titulo);
   font-weight: 800;
   font-size: 1.15rem;
@@ -204,10 +206,21 @@ h4 {
   height: 30px;
 }
 
+.marca-logo {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+}
+
+.cabecalho .conteiner {
+  padding-left: 12px;
+}
+
 .navegacao-lista {
   display: flex;
   align-items: center;
   gap: 26px;
+  white-space: nowrap;
 }
 
 .navegacao-lista a {
@@ -422,4 +435,13 @@ button:focus-visible {
     transition: none !important;
     scroll-behavior: auto;
   }
+}
+
+.cabecalho .conteiner {
+  max-width: 100%;
+  padding-left: 12px;
+}
+
+.cabecalho .marca {
+  margin-left: -20px;
 }
