@@ -1,5 +1,5 @@
 /* ==========================================================
-   AURION - JS DA PAGINA DE PRODUTO
+   LOGIMIND - JS DA PAGINA DE PRODUTO
    Monta a lista de componentes e calcula o valor total.
 
    >>> EDITE APENAS A LISTA ABAIXO PARA MUDAR PRECOS OU ITENS.
@@ -9,6 +9,7 @@
 const componentes = [
   {
     nome: "ESP32",
+    imagem: "esp32.png",
     funcao: "Microcontrolador que comanda todo o sistema",
     valor: 36.85,
     quantidade: 1,
@@ -16,6 +17,7 @@ const componentes = [
   },
   {
     nome: "Motor DC 12V",
+    imagem: "motor-dc.png",
     funcao: "Movimenta a correia da esteira",
     valor: 55.0,
     quantidade: 1,
@@ -23,6 +25,7 @@ const componentes = [
   },
   {
     nome: "Ponte H L298N",
+    imagem: "ponte-h.png",
     funcao: "Controla o sentido e a velocidade do motor",
     valor: 20.0,
     quantidade: 1,
@@ -30,6 +33,7 @@ const componentes = [
   },
   {
     nome: "Servo motor MG996R",
+    imagem: "servo-mg996r.png",
     funcao: "Desvia a carga para a saida correta",
     valor: 96.0,
     quantidade: 1,
@@ -37,6 +41,7 @@ const componentes = [
   },
   {
     nome: "Camera para QR Code",
+    imagem: "camera.png",
     funcao: "Faz a leitura do codigo de cada mercadoria",
     valor: 23.9,
     quantidade: 1,
@@ -44,6 +49,7 @@ const componentes = [
   },
   {
     nome: "Fonte 12V",
+    imagem: "fonte.png",
     funcao: "Alimenta o motor e a estrutura da esteira",
     valor: 35.0,
     quantidade: 1,
@@ -51,6 +57,7 @@ const componentes = [
   },
   {
     nome: "Sensor TCRT5000",
+    imagem: "sensor.png",
     funcao: "Detecta a passagem da carga na esteira",
     valor: 35.16,
     quantidade: 1,
@@ -59,8 +66,7 @@ const componentes = [
 ];
 
 /* ---------- ICONES DAS PECAS ---------- */
-/* Para usar fotos reais: salve os arquivos nesta mesma pasta e troque
-   montarMiniatura() por: `<img src="${arquivo}" alt="${nome}">` */
+/* Icones usados como reserva enquanto a foto de uma peca nao existe. */
 const icones = {
   placa:
     '<rect x="4" y="7" width="24" height="18" rx="2"/><path d="M9 7V3M15 7V3M21 7V3M9 29v-4M15 29v-4M21 29v-4M10 13h12M10 17h8"/>',
@@ -74,15 +80,27 @@ const icones = {
     '<circle cx="16" cy="16" r="4"/><path d="M16 4v4M16 24v4M4 16h4M24 16h4M8 8l3 3M21 21l3 3M24 8l-3 3M11 21l-3 3"/>'
 };
 
-function montarMiniatura(chave) {
+function montarIcone(chave) {
   const desenho = icones[chave] || icones.placa;
-  return `
-    <div class="componente-miniatura" aria-hidden="true">
-      <svg width="40" height="40" viewBox="0 0 32 32" fill="none"
-           stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-        ${desenho}
-      </svg>
-    </div>`;
+  return `<svg width="40" height="40" viewBox="0 0 32 32" fill="none"
+               stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            ${desenho}
+          </svg>`;
+}
+
+/* Mostra a foto da peca. Se o arquivo ainda nao existir na pasta imagens/,
+   o proprio navegador troca pelo icone desenhado, sem quebrar a pagina. */
+function montarMiniatura(peca) {
+  if (peca.imagem) {
+    return `
+      <div class="componente-miniatura">
+        <img src="imagens/${peca.imagem}" alt="Foto do componente ${peca.nome}"
+             loading="lazy"
+             onerror="this.parentElement.innerHTML = montarIcone('${peca.icone}')">
+      </div>`;
+  }
+
+  return `<div class="componente-miniatura" aria-hidden="true">${montarIcone(peca.icone)}</div>`;
 }
 
 /* ---------- FORMATACAO EM REAIS ---------- */
@@ -106,7 +124,7 @@ function desenharComponentes(lista) {
     const artigo = document.createElement("article");
     artigo.className = "componente";
     artigo.innerHTML = `
-      ${montarMiniatura(peca.icone)}
+      ${montarMiniatura(peca)}
       <div class="componente-dados">
         <h3 class="componente-nome">${peca.nome}</h3>
         <p class="componente-funcao">${peca.funcao}</p>

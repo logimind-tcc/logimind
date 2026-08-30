@@ -1,4 +1,4 @@
-# AURION - Esteira Inteligente
+# LogiMind - Esteira Inteligente
 
 Site do projeto de automacao logistica: uma esteira que le QR Code, identifica a
 mercadoria com um ESP32 e separa a carga automaticamente.
@@ -53,7 +53,7 @@ extensao **REST Client** do VS Code para testar as rotas.
 O servidor espera uma tabela como esta:
 
 ```sql
-CREATE TABLE Cadastros_Aurion (
+CREATE TABLE Cadastros_LogiMind (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(120) NOT NULL,
   email VARCHAR(160) NOT NULL

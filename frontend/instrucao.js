@@ -1,5 +1,5 @@
 /* ==========================================================
-   AURION - JS DA PAGINA DE INSTRUCOES
+   LOGIMIND - JS DA PAGINA DE INSTRUCOES
    Revela os passos conforme a rolagem e trata o espaco do video.
    ========================================================== */
 

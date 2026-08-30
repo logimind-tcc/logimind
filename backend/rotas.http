@@ -10,7 +10,7 @@ Content-Type: application/json
 
 {
     "nome": "Marcio Marcal",
-    "email": "marcio@aurion.com.br"
+    "email": "marcio@logimind.com.br"
 }
 
 ### Apagar um cadastro pelo id

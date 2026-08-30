@@ -1,5 +1,5 @@
 /* ==========================================================
-   AURION - JS DA PAGINA HOME
+   LOGIMIND - JS DA PAGINA HOME
    Valida o formulario de cadastro e envia para o servidor.
    ========================================================== */
 

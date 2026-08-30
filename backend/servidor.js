@@ -1,5 +1,5 @@
 /* ==========================================================
-   AURION - SERVIDOR
+   LOGIMIND - SERVIDOR
    Express + MySQL2 + CORS
    Rodar com: npm run dev  (usa o nodemon)
    ========================================================== */
@@ -25,13 +25,13 @@ app.use(express.static("frontend")); // serve as paginas da pasta frontend
 /* ---------- ROTA DE TESTE ---------- */
 app.get("/", (requisicao, resposta) => {
   resposta.json({
-    mensagem: "Servidor da AURION no ar"
+    mensagem: "Servidor da LogiMind no ar"
   });
 });
 
 /* ---------- LISTAR CADASTROS ---------- */
 app.get("/cadastros", (requisicao, resposta) => {
-  const comandoBuscar = "SELECT * FROM Cadastros_Aurion";
+  const comandoBuscar = "SELECT * FROM Cadastros_LogiMind";
 
   banco.query(comandoBuscar, (erro, resultado) => {
     if (erro) {
@@ -55,7 +55,7 @@ app.post("/criar-cadastro", (requisicao, resposta) => {
     });
   }
 
-  const comandoInserir = "INSERT INTO Cadastros_Aurion(nome, email) VALUES (?, ?)";
+  const comandoInserir = "INSERT INTO Cadastros_LogiMind(nome, email) VALUES (?, ?)";
 
   banco.query(comandoInserir, [nome, email], (erro) => {
     if (erro) {
@@ -74,7 +74,7 @@ app.post("/criar-cadastro", (requisicao, resposta) => {
 /* ---------- APAGAR CADASTRO ---------- */
 app.delete("/apagar-cadastro/:id", (requisicao, resposta) => {
   const { id } = requisicao.params;
-  const comandoApagar = "DELETE FROM Cadastros_Aurion WHERE id=?";
+  const comandoApagar = "DELETE FROM Cadastros_LogiMind WHERE id=?";
 
   banco.query(comandoApagar, [id], (erro) => {
     if (erro) {

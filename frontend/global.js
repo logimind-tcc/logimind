@@ -1,11 +1,11 @@
 /* ==========================================================
-   AURION - JS GLOBAL
+   LOGIMIND - JS GLOBAL
    Roda nas tres paginas: tema claro/escuro + menu mobile.
    ========================================================== */
 
 /* ---------- 1. TEMA CLARO / ESCURO ---------- */
 
-const CHAVE_TEMA = "aurion-tema";
+const CHAVE_TEMA = "logimind-tema";
 
 // Le o tema salvo no navegador. Se nunca foi salvo, usa a preferencia do sistema.
 function lerTemaSalvo() {
