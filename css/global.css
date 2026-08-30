@@ -1,0 +1,431 @@
+/* ==========================================================
+   AURION - CSS GLOBAL
+   Estilos reaproveitados nas tres paginas (e na Etapa 2).
+   Ordem: variaveis > reset > tipografia > botoes > cabecalho
+          > rodape > utilitarios > responsivo
+   ========================================================== */
+
+/* ---------- 1. VARIAVEIS: TEMA CLARO (padrao) ---------- */
+:root {
+  --cor-azul: #1358e3;
+  --cor-azul-forte: #0b3fa8;
+  --cor-azul-claro: #3b9eff;
+  --cor-fundo: #ffffff;
+  --cor-fundo-alt: #f2f5fa;
+  --cor-cartao: #ffffff;
+  --cor-borda: #dbe3f0;
+  --cor-titulo: #0b1220;
+  --cor-texto: #55607a;
+  --cor-sombra: rgba(11, 18, 32, 0.08);
+  --cor-cabecalho: rgba(255, 255, 255, 0.92);
+
+  --fonte-titulo: "Sora", "Segoe UI", sans-serif;
+  --fonte-texto: "Inter", "Segoe UI", Arial, sans-serif;
+
+  --largura-maxima: 1160px;
+  --raio: 12px;
+  --raio-grande: 20px;
+  --transicao: 0.25s ease;
+}
+
+/* ---------- 2. VARIAVEIS: TEMA ESCURO ---------- */
+/* Ativado pelo atributo data-tema="escuro" no <html> (ver js/global.js) */
+[data-tema="escuro"] {
+  --cor-azul: #4d8dff;
+  --cor-azul-forte: #82b4ff;
+  --cor-azul-claro: #6fb4ff;
+  --cor-fundo: #0b1220;
+  --cor-fundo-alt: #111b2e;
+  --cor-cartao: #141f36;
+  --cor-borda: #24314c;
+  --cor-titulo: #eef3ff;
+  --cor-texto: #a5b2c9;
+  --cor-sombra: rgba(0, 0, 0, 0.45);
+  --cor-cabecalho: rgba(11, 18, 32, 0.92);
+}
+
+/* ---------- 3. RESET ---------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: var(--fonte-texto);
+  font-size: 16px;
+  line-height: 1.65;
+  transition: background-color var(--transicao), color var(--transicao);
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- 4. TIPOGRAFIA ---------- */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--fonte-titulo);
+  color: var(--cor-titulo);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.titulo-secao {
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.titulo-secao span {
+  color: var(--cor-azul);
+  display: block;
+}
+
+.texto-apoio {
+  max-width: 620px;
+  margin-top: 12px;
+  font-size: 1.02rem;
+}
+
+.etiqueta {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cor-azul);
+}
+
+/* ---------- 5. LAYOUT ---------- */
+.conteiner {
+  width: 100%;
+  max-width: var(--largura-maxima);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.secao {
+  padding: 84px 0;
+}
+
+.secao-alternada {
+  background-color: var(--cor-fundo-alt);
+}
+
+/* ---------- 6. BOTOES ---------- */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border: 2px solid var(--cor-azul);
+  border-radius: 8px;
+  font-family: var(--fonte-titulo);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--transicao), background-color var(--transicao),
+    color var(--transicao);
+}
+
+.botao-primario {
+  background-color: var(--cor-azul);
+  color: #ffffff;
+}
+
+.botao-primario:hover {
+  background-color: var(--cor-azul-forte);
+  border-color: var(--cor-azul-forte);
+  transform: translateY(-2px);
+}
+
+.botao-secundario {
+  background-color: transparent;
+  color: var(--cor-azul);
+}
+
+.botao-secundario:hover {
+  background-color: var(--cor-azul);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* ---------- 7. CABECALHO E NAVEGACAO ---------- */
+.cabecalho {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: var(--cor-cabecalho);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.cabecalho-interno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 72px;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--fonte-titulo);
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.14em;
+  color: var(--cor-azul);
+}
+
+.marca svg {
+  width: 30px;
+  height: 30px;
+}
+
+.navegacao-lista {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.navegacao-lista a {
+  font-size: 0.93rem;
+  font-weight: 500;
+  color: var(--cor-titulo);
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+  transition: color var(--transicao), border-color var(--transicao);
+}
+
+.navegacao-lista a:hover {
+  color: var(--cor-azul);
+}
+
+.navegacao-lista a.ativo {
+  color: var(--cor-azul);
+  border-color: var(--cor-azul);
+  font-weight: 600;
+}
+
+.navegacao-lista .link-cadastro {
+  background-color: var(--cor-azul);
+  color: #ffffff;
+  padding: 9px 20px;
+  border-radius: 999px;
+  border-bottom: none;
+}
+
+.navegacao-lista .link-cadastro:hover {
+  background-color: var(--cor-azul-forte);
+  color: #ffffff;
+}
+
+.acoes-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Botao de troca de tema */
+.botao-tema {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background-color: transparent;
+  border: 1px solid var(--cor-borda);
+  border-radius: 50%;
+  color: var(--cor-titulo);
+  cursor: pointer;
+  transition: border-color var(--transicao), color var(--transicao);
+}
+
+.botao-tema:hover {
+  border-color: var(--cor-azul);
+  color: var(--cor-azul);
+}
+
+.botao-tema .icone-lua {
+  display: none;
+}
+
+[data-tema="escuro"] .botao-tema .icone-sol {
+  display: none;
+}
+
+[data-tema="escuro"] .botao-tema .icone-lua {
+  display: block;
+}
+
+/* Botao do menu mobile */
+.botao-menu {
+  display: none;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  color: var(--cor-titulo);
+  cursor: pointer;
+}
+
+/* ---------- 8. RODAPE ---------- */
+.rodape {
+  background: linear-gradient(90deg, #071b3d 0%, var(--cor-azul) 100%);
+  color: #dbe7ff;
+  padding: 34px 0;
+}
+
+.rodape-interno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.rodape .marca {
+  color: #ffffff;
+}
+
+.rodape-lista {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  font-size: 0.92rem;
+}
+
+.rodape-lista a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.rodape-direitos {
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 22px;
+  padding-top: 16px;
+  font-size: 0.82rem;
+  color: #b8ccf2;
+}
+
+/* ---------- 9. UTILITARIOS ---------- */
+.cartao {
+  background-color: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 22px;
+  transition: transform var(--transicao), box-shadow var(--transicao),
+    border-color var(--transicao);
+}
+
+.cartao:hover {
+  transform: translateY(-4px);
+  border-color: var(--cor-azul);
+  box-shadow: 0 14px 30px var(--cor-sombra);
+}
+
+.icone-quadrado {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background-color: rgba(19, 88, 227, 0.1);
+  color: var(--cor-azul);
+  margin-bottom: 14px;
+}
+
+[data-tema="escuro"] .icone-quadrado {
+  background-color: rgba(77, 141, 255, 0.16);
+}
+
+/* Acessibilidade: foco visivel pelo teclado */
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--cor-azul-claro);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------- 10. RESPONSIVO (mobile) ---------- */
+@media (max-width: 900px) {
+  .botao-menu {
+    display: grid;
+    place-items: center;
+  }
+
+  .navegacao {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--cor-fundo);
+    border-bottom: 1px solid var(--cor-borda);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transicao);
+  }
+
+  .navegacao.aberta {
+    max-height: 420px;
+  }
+
+  .navegacao-lista {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 10px 24px 22px;
+  }
+
+  .navegacao-lista a {
+    padding: 13px 0;
+    border-bottom: 1px solid var(--cor-borda);
+  }
+
+  .navegacao-lista .link-cadastro {
+    margin-top: 14px;
+    text-align: center;
+    border-bottom: none;
+  }
+
+  .secao {
+    padding: 56px 0;
+  }
+
+  .rodape-interno {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Respeita quem prefere menos animacao */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto;
+  }
+}

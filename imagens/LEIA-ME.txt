@@ -1,0 +1,1 @@
+Coloque aqui as fotos dos componentes (esp32.png, motor.png, etc.).

@@ -1,0 +1,172 @@
+/* ==========================================================
+   AURION - CSS DA PAGINA DE INSTRUCOES
+   Depende de css/global.css
+   ========================================================== */
+
+/* ---------- TRILHA DE PASSOS ---------- */
+.trilha-passos {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 18px;
+  margin-top: 52px;
+  list-style: none;
+  counter-reset: passo;
+}
+
+.passo article {
+  position: relative;
+  height: 100%;
+  background-color: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 34px 20px 22px;
+  transition: transform var(--transicao), border-color var(--transicao),
+    box-shadow var(--transicao);
+}
+
+.passo article:hover {
+  transform: translateY(-5px);
+  border-color: var(--cor-azul);
+  box-shadow: 0 16px 32px var(--cor-sombra);
+}
+
+.passo-numero {
+  position: absolute;
+  top: -18px;
+  left: 20px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background-color: var(--cor-azul);
+  color: #ffffff;
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 6px 16px rgba(19, 88, 227, 0.35);
+}
+
+/* Seta de ligacao entre os passos (desktop) */
+.passo:not(:last-child) article::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -14px;
+  width: 12px;
+  height: 2px;
+  background-color: var(--cor-azul);
+  opacity: 0.55;
+}
+
+.passo-icone {
+  color: var(--cor-azul);
+  margin-bottom: 14px;
+}
+
+.passo-titulo {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.passo p {
+  font-size: 0.9rem;
+}
+
+/* Realce quando o passo entra na tela (js/instrucao.js) */
+.passo.visivel article {
+  animation: surgirPasso 0.5s ease both;
+}
+
+@keyframes surgirPasso {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- AREA DE VIDEO ---------- */
+.destaque-lateral {
+  border-left: 3px solid var(--cor-azul);
+  padding-left: 14px;
+}
+
+.area-video {
+  margin-top: 34px;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  max-width: 900px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--raio-grande);
+  border: 2px dashed var(--cor-azul);
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(19, 88, 227, 0.06) 0 14px,
+      transparent 14px 28px
+    ),
+    var(--cor-cartao);
+  color: var(--cor-azul);
+  cursor: pointer;
+  transition: background-color var(--transicao), transform var(--transicao);
+}
+
+.area-video:hover,
+.area-video:focus-visible {
+  transform: scale(1.005);
+  background-color: rgba(19, 88, 227, 0.05);
+}
+
+.video-marcador {
+  text-align: center;
+}
+
+.video-marcador svg {
+  margin: 0 auto 10px;
+}
+
+.video-legenda {
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--cor-titulo);
+}
+
+.video-observacao {
+  font-size: 0.87rem;
+  color: var(--cor-texto);
+  margin-top: 4px;
+}
+
+.video-real {
+  margin-top: 34px;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 16 / 9;
+  border: none;
+  border-radius: var(--raio-grande);
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width: 1000px) {
+  .trilha-passos {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px 18px;
+  }
+
+  .passo:not(:last-child) article::after {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .trilha-passos {
+    grid-template-columns: 1fr;
+  }
+}

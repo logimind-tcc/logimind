@@ -1,0 +1,166 @@
+/* ==========================================================
+   AURION - CSS DA PAGINA DE PRODUTO
+   Depende de css/global.css
+   ========================================================== */
+
+/* ---------- PAINEL DE RESUMO ---------- */
+.painel-resumo {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  align-items: center;
+  gap: 40px;
+  margin-top: 44px;
+}
+
+.resumo-imagem svg {
+  width: 100%;
+  height: auto;
+}
+
+.resumo-valor {
+  background-color: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-left: 5px solid var(--cor-azul);
+  border-radius: var(--raio);
+  padding: 26px;
+}
+
+.valor-total {
+  font-family: var(--fonte-titulo);
+  font-size: clamp(2rem, 4vw, 2.7rem);
+  font-weight: 800;
+  color: var(--cor-titulo);
+  letter-spacing: -0.03em;
+  margin: 6px 0 4px;
+}
+
+.valor-observacao {
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+/* ---------- BARRA DE FERRAMENTAS ---------- */
+.barra-ferramentas {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 26px;
+}
+
+.campo-ordenacao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--cor-titulo);
+}
+
+.campo-ordenacao select {
+  padding: 9px 12px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  background-color: var(--cor-cartao);
+  color: var(--cor-titulo);
+  font-family: var(--fonte-texto);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.campo-ordenacao select:focus {
+  outline: none;
+  border-color: var(--cor-azul);
+  box-shadow: 0 0 0 3px rgba(59, 158, 255, 0.25);
+}
+
+/* ---------- GRADE DE COMPONENTES ---------- */
+.grade-componentes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.componente {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background-color: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 16px 20px;
+  transition: transform var(--transicao), border-color var(--transicao),
+    box-shadow var(--transicao);
+}
+
+.componente:hover {
+  transform: translateY(-3px);
+  border-color: var(--cor-azul);
+  box-shadow: 0 14px 28px var(--cor-sombra);
+}
+
+/* Miniatura da peca. Para usar foto real:
+   troque a <div class="componente-miniatura"> por <img src="imagens/esp32.png" alt="ESP32"> */
+.componente-miniatura {
+  flex-shrink: 0;
+  width: 78px;
+  height: 78px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background-color: #0b1220;
+  color: var(--cor-azul-claro);
+}
+
+.componente-dados {
+  flex: 1;
+  min-width: 0;
+}
+
+.componente-nome {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.componente-funcao {
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.componente-valor {
+  font-family: var(--fonte-titulo);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--cor-azul);
+}
+
+.componente-quantidade {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--cor-texto);
+  margin-left: 6px;
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width: 900px) {
+  .painel-resumo {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+  .grade-componentes {
+    grid-template-columns: 1fr;
+  }
+
+  .barra-ferramentas {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .componente {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+}

@@ -1,0 +1,17 @@
+### Testar se o servidor esta no ar
+GET http://localhost:8080/
+
+### Listar todos os cadastros
+GET http://localhost:8080/cadastros
+
+### Criar um cadastro
+POST http://localhost:8080/criar-cadastro
+Content-Type: application/json
+
+{
+    "nome": "Marcio Marcal",
+    "email": "marcio@aurion.com.br"
+}
+
+### Apagar um cadastro pelo id
+DELETE http://localhost:8080/apagar-cadastro/1

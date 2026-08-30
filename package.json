@@ -1,0 +1,22 @@
+{
+  "name": "logimind",
+  "version": "1.0.0",
+  "description": "Site do projeto AURION - esteira inteligente para automacao logistica",
+  "type": "module",
+  "main": "servidor/index.js",
+  "scripts": {
+    "dev": "nodemon servidor/index.js",
+    "start": "node servidor/index.js"
+  },
+  "keywords": ["aurion", "logistica", "esp32", "automacao"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
