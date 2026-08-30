@@ -20,7 +20,7 @@ const PORTA = 8080;
 
 app.use(cors()); // libera o acesso do site (front-end) ao servidor
 app.use(express.json());
-app.use(express.static("."));
+app.use(express.static("frontend")); // serve as paginas da pasta frontend
 
 /* ---------- ROTA DE TESTE ---------- */
 app.get("/", (requisicao, resposta) => {

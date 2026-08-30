@@ -29,7 +29,7 @@
 }
 
 /* ---------- 2. VARIAVEIS: TEMA ESCURO ---------- */
-/* Ativado pelo atributo data-tema="escuro" no <html> (ver js/global.js) */
+/* Ativado pelo atributo data-tema="escuro" no <html> (ver global.js) */
 [data-tema="escuro"] {
   --cor-azul: #4d8dff;
   --cor-azul-forte: #82b4ff;

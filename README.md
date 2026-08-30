@@ -7,21 +7,24 @@ mercadoria com um ESP32 e separa a carga automaticamente.
 
 ```
 logimind/
-├── home.html       Pagina 1 - apresentacao do projeto
-├── home.css
-├── home.js         formulario de cadastro
-├── instrucao.html  Pagina 2 - guia de utilizacao passo a passo
-├── instrucao.css
-├── instrucao.js    animacao dos passos
-├── produto.html    Pagina 3 - componentes e valor total
-├── produto.css
-├── produto.js      lista de componentes e calculo do total
-├── global.css      variaveis, temas, cabecalho, rodape (reaproveitado na Etapa 2)
-├── global.js       tema claro/escuro + menu mobile
-├── servidor.js     Express + MySQL2 + CORS
-├── rotas.http      testes das rotas
+├── frontend/           tudo que roda no navegador
+│   ├── home.html       Pagina 1 - apresentacao do projeto
+│   ├── home.css
+│   ├── home.js         formulario de cadastro
+│   ├── instrucao.html  Pagina 2 - guia de utilizacao passo a passo
+│   ├── instrucao.css
+│   ├── instrucao.js    animacao dos passos
+│   ├── produto.html    Pagina 3 - componentes e valor total
+│   ├── produto.css
+│   ├── produto.js      lista de componentes e calculo do total
+│   ├── global.css      variaveis, temas, cabecalho, rodape (reaproveitado na Etapa 2)
+│   ├── global.js       tema claro/escuro + menu mobile
+│   └── vercel.json     faz a "/" abrir a home.html
+├── backend/            tudo que roda no servidor
+│   ├── servidor.js     Express + MySQL2 + CORS
+│   └── rotas.http      testes das rotas
 ├── package.json
-└── vercel.json     faz a "/" abrir a home.html
+└── README.md
 ```
 
 
@@ -33,7 +36,7 @@ logimind/
 npm install
 ```
 
-2. Abra o site: clique com o botao direito em `home.html` > **Open with Live Server**
+2. Abra o site: clique com o botao direito em `frontend/home.html` > **Open with Live Server**
    (extensao Live Server do VS Code).
 
 3. Ligue o servidor, se for testar o cadastro:
@@ -67,10 +70,10 @@ entao trocar a paleta e mexer em um lugar so.
 
 | O que voce quer mudar | Onde |
 | --- | --- |
-| Precos e pecas do projeto | lista `componentes` no topo de `produto.js` |
-| Cores do site | `:root` e `[data-tema="escuro"]` em `global.css` |
-| Video demonstrativo | bloco `.area-video` em `instrucao.html` |
-| Endereco do servidor | `ENDERECO_SERVIDOR` em `home.js` |
+| Precos e pecas do projeto | lista `componentes` no topo de `frontend/produto.js` |
+| Cores do site | `:root` e `[data-tema="escuro"]` em `frontend/global.css` |
+| Video demonstrativo | bloco `.area-video` em `frontend/instrucao.html` |
+| Endereco do servidor | `ENDERECO_SERVIDOR` em `frontend/home.js` |
 
 ## Publicar na Vercel
 
@@ -81,7 +84,8 @@ git push -u origin main
 ```
 
 Depois entre em vercel.com > **Add New Project** > importe o repositorio
-`logimind` > **Deploy**. Nao precisa configurar build: e um site estatico.
+`logimind`. Em **Root Directory**, clique em *Edit* e escolha a pasta
+**frontend**. Nao precisa configurar build: e um site estatico.
 
 ## Checklist da entrega
 

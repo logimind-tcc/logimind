@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Site do projeto AURION - esteira inteligente para automacao logistica",
   "type": "module",
-  "main": "servidor.js",
+  "main": "backend/servidor.js",
   "scripts": {
-    "dev": "nodemon servidor.js",
-    "start": "node servidor.js"
+    "dev": "nodemon backend/servidor.js",
+    "start": "node backend/servidor.js"
   },
   "keywords": ["aurion", "logistica", "esp32", "automacao"],
   "author": "",
