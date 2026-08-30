@@ -5,8 +5,7 @@
   "type": "module",
   "main": "backend/servidor.js",
   "scripts": {
-    "dev": "nodemon backend/servidor.js",
-    "start": "node backend/servidor.js"
+   "dev": "node --watch server.js"
   },
   "keywords": ["logimind", "logistica", "esp32", "automacao"],
   "author": "",
