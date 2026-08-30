@@ -172,8 +172,6 @@ h4 {
 
 /* ---------- 7. CABECALHO E NAVEGACAO ---------- */
 .cabecalho {
-  position: sticky;
-  top: 0;
   z-index: 50;
   background-color: var(--cor-cabecalho);
   backdrop-filter: blur(10px);
@@ -444,4 +442,12 @@ button:focus-visible {
 
 .cabecalho .marca {
   margin-left: -20px;
+}
+
+.cabecalho-interno {
+  justify-content: center;
+}
+
+.cabecalho .marca {
+  margin-right: 40px;
 }
