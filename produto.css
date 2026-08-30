@@ -99,7 +99,7 @@
 }
 
 /* Miniatura da peca. Para usar foto real:
-   troque a <div class="componente-miniatura"> por <img src="imagens/esp32.png" alt="ESP32"> */
+   troque a <div class="componente-miniatura"> por <img src="esp32.png" alt="ESP32"> */
 .componente-miniatura {
   flex-shrink: 0;
   width: 78px;

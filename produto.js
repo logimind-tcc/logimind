@@ -59,8 +59,8 @@ const componentes = [
 ];
 
 /* ---------- ICONES DAS PECAS ---------- */
-/* Para usar fotos reais: salve os arquivos em imagens/ e troque
-   montarMiniatura() por: `<img src="imagens/${arquivo}" alt="${nome}">` */
+/* Para usar fotos reais: salve os arquivos nesta mesma pasta e troque
+   montarMiniatura() por: `<img src="${arquivo}" alt="${nome}">` */
 const icones = {
   placa:
     '<rect x="4" y="7" width="24" height="18" rx="2"/><path d="M9 7V3M15 7V3M21 7V3M9 29v-4M15 29v-4M21 29v-4M10 13h12M10 17h8"/>',

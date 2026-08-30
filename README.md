@@ -7,26 +7,23 @@ mercadoria com um ESP32 e separa a carga automaticamente.
 
 ```
 logimind/
-├── home.html          Pagina 1 - apresentacao do projeto
-├── instrucao.html     Pagina 2 - guia de utilizacao passo a passo
-├── produto.html       Pagina 3 - componentes e valor total
-├── css/
-│   ├── global.css     variaveis, temas, cabecalho, rodape (reaproveitado na Etapa 2)
-│   ├── home.css
-│   ├── instrucao.css
-│   └── produto.css
-├── js/
-│   ├── global.js      tema claro/escuro + menu mobile
-│   ├── home.js        formulario de cadastro
-│   ├── instrucao.js   animacao dos passos
-│   └── produto.js     lista de componentes e calculo do total
-├── imagens/           fotos das pecas (opcional)
-├── servidor/
-│   ├── index.js       Express + MySQL2 + CORS
-│   └── rotas.http     testes das rotas
+├── home.html       Pagina 1 - apresentacao do projeto
+├── home.css
+├── home.js         formulario de cadastro
+├── instrucao.html  Pagina 2 - guia de utilizacao passo a passo
+├── instrucao.css
+├── instrucao.js    animacao dos passos
+├── produto.html    Pagina 3 - componentes e valor total
+├── produto.css
+├── produto.js      lista de componentes e calculo do total
+├── global.css      variaveis, temas, cabecalho, rodape (reaproveitado na Etapa 2)
+├── global.js       tema claro/escuro + menu mobile
+├── servidor.js     Express + MySQL2 + CORS
+├── rotas.http      testes das rotas
 ├── package.json
-└── vercel.json        faz a "/" abrir a home.html
+└── vercel.json     faz a "/" abrir a home.html
 ```
+
 
 ## Como rodar
 
@@ -45,7 +42,7 @@ npm install
 npm run dev
 ```
 
-O servidor sobe em `http://localhost:8080`. Use o `servidor/rotas.http` com a
+O servidor sobe em `http://localhost:8080`. Use o `rotas.http` com a
 extensao **REST Client** do VS Code para testar as rotas.
 
 ### Tabela do banco
@@ -63,17 +60,17 @@ CREATE TABLE Cadastros_Aurion (
 ## Tema claro e escuro
 
 O botao no canto superior direito troca entre os dois temas. A escolha fica
-salva no navegador. Todas as cores vivem em variaveis CSS no `css/global.css`,
+salva no navegador. Todas as cores vivem em variaveis CSS no `global.css`,
 entao trocar a paleta e mexer em um lugar so.
 
 ## Onde editar as coisas
 
 | O que voce quer mudar | Onde |
 | --- | --- |
-| Precos e pecas do projeto | lista `componentes` no topo de `js/produto.js` |
-| Cores do site | `:root` e `[data-tema="escuro"]` em `css/global.css` |
+| Precos e pecas do projeto | lista `componentes` no topo de `produto.js` |
+| Cores do site | `:root` e `[data-tema="escuro"]` em `global.css` |
 | Video demonstrativo | bloco `.area-video` em `instrucao.html` |
-| Endereco do servidor | `ENDERECO_SERVIDOR` em `js/home.js` |
+| Endereco do servidor | `ENDERECO_SERVIDOR` em `home.js` |
 
 ## Publicar na Vercel
 
