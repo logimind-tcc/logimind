@@ -25,8 +25,7 @@
     <header class="cabecalho">
       <div class="conteiner cabecalho-interno">
         <a class="marca" href="home.html" aria-label="LogiMind - pagina inicial">
-        
-            <img src="./pecas/logo.png" alt="logo">
+          <img src="./pecas/logo.png" alt="Logotipo da LogiMind" />
           LOGIMIND
         </a>
 
@@ -126,20 +125,12 @@
             custo final.
           </p>
 
-          <!-- Os cartoes sao gerados por js/produto.js a partir da lista de componentes -->
-          <div class="grade-componentes" id="grade-componentes">
-          </div>         
+          <!-- Os cartoes sao gerados por produto.js a partir da lista de componentes.
+               As fotos das pecas entram nas miniaturas pelo fotos-pecas.js -->
+          <div class="grade-componentes" id="grade-componentes"></div>
         </div>
       </section>
     </main>
-
-              <img src="./pecas/esp32.png" alt="32">
-              <img src="./pecas/camera.png" alt="camera">
-              <img src="./pecas/mg.png" alt="mg">
-              <img src="./pecas/modulo.png" alt="modulo">
-              <img src="./pecas/motor.png" alt="motor">
-              <img src="./pecas/sensor.png" alt="sensor">
-    
 
     <!-- ===================== RODAPE ===================== -->
     <footer class="rodape">
@@ -157,7 +148,7 @@
           <li><a href="instrucao.html">Guia</a></li>
           <li><a href="home.html#cadastro">Contato e suporte</a></li>
         </ul>
-        <p class="rodape-direitos">
+        <p class="rodape-direitos"> 
           LogiMind - Projeto academico de automacao logistica. Todos os direitos
           reservados.
         </p>
@@ -166,5 +157,6 @@
 
     <script src="global.js"></script>
     <script src="produto.js"></script>
+    <script src="fotos-pecas.js"></script>
   </body>
 </html>

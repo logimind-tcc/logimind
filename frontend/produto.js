@@ -4,6 +4,7 @@
 
    >>> EDITE APENAS A LISTA ABAIXO PARA MUDAR PRECOS OU ITENS.
    O valor total e a quantidade de itens sao calculados sozinhos.
+   As fotos ficam na pasta pecas/, ao lado do produto.html.
    ========================================================== */
 
 const componentes = [
@@ -17,7 +18,7 @@ const componentes = [
   },
   {
     nome: "Motor DC 12V",
-    imagem: "motor-dc.png",
+    imagem: "motor.png",
     funcao: "Movimenta a correia da esteira",
     valor: 55.0,
     quantidade: 1,
@@ -25,7 +26,7 @@ const componentes = [
   },
   {
     nome: "Ponte H L298N",
-    imagem: "ponte-h.png",
+    imagem: "modulo.png",
     funcao: "Controla o sentido e a velocidade do motor",
     valor: 20.0,
     quantidade: 1,
@@ -33,7 +34,7 @@ const componentes = [
   },
   {
     nome: "Servo motor MG996R",
-    imagem: "servo-mg996r.png",
+    imagem: "mg.png",
     funcao: "Desvia a carga para a saida correta",
     valor: 96.0,
     quantidade: 1,
@@ -48,8 +49,10 @@ const componentes = [
     icone: "camera"
   },
   {
+    /* Sem foto na pasta pecas/ ainda: usa o icone desenhado.
+       Para colocar a foto, salve pecas/fonte.png e escreva imagem: "fonte.png" */
     nome: "Fonte 12V",
-    imagem: "fonte.png",
+    imagem: "",
     funcao: "Alimenta o motor e a estrutura da esteira",
     valor: 35.0,
     quantidade: 1,
@@ -88,13 +91,13 @@ function montarIcone(chave) {
           </svg>`;
 }
 
-/* Mostra a foto da peca. Se o arquivo ainda nao existir na pasta imagens/,
+/* Mostra a foto da peca. Se o arquivo ainda nao existir na pasta pecas/,
    o proprio navegador troca pelo icone desenhado, sem quebrar a pagina. */
 function montarMiniatura(peca) {
   if (peca.imagem) {
     return `
       <div class="componente-miniatura">
-        <img src="imagens/${peca.imagem}" alt="Foto do componente ${peca.nome}"
+        <img src="pecas/${peca.imagem}" alt="Foto do componente ${peca.nome}"
              loading="lazy"
              onerror="this.parentElement.innerHTML = montarIcone('${peca.icone}')">
       </div>`;
