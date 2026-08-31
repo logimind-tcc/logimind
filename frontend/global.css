@@ -153,21 +153,9 @@ h4 {
   color: #ffffff;
 }
 
-.botao-primario:hover {
-  background-color: var(--cor-azul-forte);
-  border-color: var(--cor-azul-forte);
-  transform: translateY(-2px);
-}
-
 .botao-secundario {
   background-color: transparent;
   color: var(--cor-azul);
-}
-
-.botao-secundario:hover {
-  background-color: var(--cor-azul);
-  color: #ffffff;
-  transform: translateY(-2px);
 }
 
 /* ---------- 7. CABECALHO E NAVEGACAO ---------- */

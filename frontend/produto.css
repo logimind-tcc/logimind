@@ -40,11 +40,6 @@
 }
 
 /* ---------- BARRA DE FERRAMENTAS ---------- */
-.barra-ferramentas {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 26px;
-}
 
 .campo-ordenacao {
   display: flex;
@@ -153,15 +148,11 @@
     grid-template-columns: 1fr;
   }
 
-  .barra-ferramentas {
-    justify-content: flex-start;
-  }
-}
-
 @media (max-width: 480px) {
   .componente {
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
   }
+}
 }
