@@ -17,7 +17,7 @@
     />
 
     <link rel="stylesheet" href="global.css" />
-    <link rel="stylesheet" href="quemsomos.css" />
+    <link rel="stylesheet" href="sobrenos.css" />
   </head>
 
   <body>
@@ -25,7 +25,7 @@
     <header class="cabecalho">
       <div class="conteiner cabecalho-interno">
         <a class="marca" href="home.html" aria-label="LogiMind - página inicial">
-          <img class="marca-logo" src="imagens/logo.png" alt="" />
+          <img src="pecas/logo.png" alt="" />
           LOGIMIND
         </a>
 
@@ -75,6 +75,8 @@
 
     <main>
       <!-- ===================== APRESENTAÇÃO DA EQUIPE ===================== -->
+
+
       <section class="secao" aria-labelledby="titulo-quem-somos">
         <div class="conteiner">
           <h1 id="titulo-quem-somos" class="titulo-secao">
@@ -91,11 +93,9 @@
               transmitir qualidade, confiança e eficiência.
             </p>
 
-            <!-- ESPAÇO PARA A ILUSTRAÇÃO DA EQUIPE
-                 Salve a imagem como frontend/imagens/equipe.png que ela aparece aqui.
-                 Se o arquivo for .jpg, troque a extensão no src abaixo.
-                 Enquanto o arquivo não existir, fica um espaço tracejado. -->
-        
+             <div class="equipe-ilustracao">
+              <img src="imagens/equipe-ilustracao.png" alt="Ilustração da equipe LogiMind" onerror="this.remove()">
+            </div>
           </div>
         </div>
       </section>
@@ -110,10 +110,6 @@
             Cada pessoa cuidou de uma parte do projeto, da montagem do protótipo
             ao desenvolvimento do site e do jogo.
           </p>
-
-           <div class="equipe-ilustracao">
-              <img src="imagens/equipe.png" alt="Ilustração da equipe LogiMind" onerror="this.remove()">
-            </div>
        
                <div class="grade-membros">
             <article class="membro">
@@ -159,12 +155,12 @@
     <footer class="rodape">
       <div class="conteiner rodape-interno">
         <a class="marca" href="home.html">
-          <img class="marca-logo" src="imagens/logo.png" alt="" />
+          <img src="pecas/logo.png" alt="" />
           LOGIMIND
         </a>
         <ul class="rodape-lista">
           <li><a href="produto.html">Comprar</a></li>
-          <li><a href="quemsomos.html">Quem somos</a></li>
+          <li><a href="sobrenos.html">Quem somos</a></li>
           <li><a href="instrucao.html">Guia</a></li>
           <li><a href="referencias.html">Referências</a></li>
         </ul>
@@ -172,7 +168,7 @@
           LogiMind - Projeto acadêmico de automação logística. Todos os direitos
           reservados.
         </p>
-      </div>/
+      </div>
     </footer>
 
     <script src="global.js"></script>

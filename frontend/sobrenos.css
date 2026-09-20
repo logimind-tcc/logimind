@@ -6,28 +6,37 @@
 /* ---------- PAINEL DE APRESENTAÇÃO ---------- */
 .painel-equipe {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  align-items: center;
+  /* O texto ocupa a maior parte e a ilustração fica ao lado, menor. */
+  grid-template-columns: 1fr 250px;
+  align-items: start;
   gap: 40px;
-  margin-top: 36px;
-  background-color: var(--cor-fundo-alt);
-  border-radius: var(--raio-grande);
-  padding: 34px;
+  margin-top: 28px;
 }
 
 .texto-equipe {
-  font-size: 1rem;
-  line-height: 1.75;
+  font-size: 0.97rem;
+  line-height: 1.8;
 }
 
-/* Espaço da ilustração. Fica tracejado enquanto a imagem não existir. */
+/* ---------- ILUSTRAÇÃO DA EQUIPE ---------- */
+/* Cartão claro de cantos arredondados, como no Figma. */
+.equipe-ilustracao {
+  background-color: #eef3ff;
+  border-radius: 18px;
+  padding: 10px;
+  max-width: 250px;
+  margin-left: auto;
+  /* margin-top negativo sobe o cartão em relação ao texto */
+  margin-top: -80px;
+}
+
+/* max-width no cartão trava o tamanho: sem ele, uma imagem
+   grande estica e ocupa a página inteira. */
 .equipe-ilustracao img {
   display: block;
   width: 100%;
-  max-width: 320px;
   height: auto;
-  margin: 0 auto;
-  border-radius: var(--raio);
+  border-radius: 12px;
 }
 
 /* ---------- GRADE DE MEMBROS ---------- */
@@ -55,8 +64,8 @@
    que estão no atributo data-iniciais de cada membro. */
 .membro-foto {
   position: relative;
-  width: 132px;
-  height: 132px;
+  width: 118px;
+  height: 118px;
   margin: 0 auto 14px;
   border-radius: 50%;
   overflow: hidden;
@@ -88,28 +97,29 @@
 }
 
 .membro-nome {
-  font-size: 1.02rem;
+  font-size: 1rem;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .membro-funcao {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--cor-texto);
-  margin-bottom: 6px;
+  margin-bottom: 1px;
 }
 
 .membro-rede {
   display: inline-block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--cor-azul);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--cor-texto);
   border-bottom: 1px solid transparent;
-  transition: border-color var(--transicao);
+  transition: color var(--transicao), border-color var(--transicao);
 }
 
 .membro-rede:hover {
+  color: var(--cor-azul);
   border-color: var(--cor-azul);
 }
 
@@ -118,7 +128,11 @@
   .painel-equipe {
     grid-template-columns: 1fr;
     gap: 26px;
-    padding: 24px;
+  }
+
+  .equipe-ilustracao {
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .grade-membros {
