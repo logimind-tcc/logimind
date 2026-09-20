@@ -130,9 +130,10 @@
     gap: 26px;
   }
 
+    /* zera o recuo do desktop, senão a imagem sobe por cima do texto */
   .equipe-ilustracao {
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
+    max-width: 200px;
   }
 
   .grade-membros {
@@ -144,6 +145,12 @@
   }
 }
 
+@media (max-width: 560px) {
+  .equipe-ilustracao {
+    max-width: 160px;
+  }
+}
+
 @media (max-width: 520px) {
   .membro {
     flex: 0 1 100%;
@@ -152,5 +159,170 @@
   .membro-foto {
     width: 112px;
     height: 112px;
+  }
+}
+
+/* ---------- CONTATO ---------- */
+.lista-assuntos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.assunto {
+  padding: 11px 18px;
+  background-color: transparent;
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;
+  color: var(--cor-titulo);
+  font-family: var(--fonte-texto);
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color var(--transicao), color var(--transicao);
+}
+
+.assunto:hover {
+  border-color: var(--cor-azul);
+  color: var(--cor-azul);
+}
+
+/* classe trocada pelo contato.js quando o assunto é escolhido */
+.assunto.marcado {
+  background-color: var(--cor-azul);
+  border-color: var(--cor-azul);
+  color: #ffffff;
+}
+
+.formulario {
+  margin-top: 36px;
+}
+
+.linha-campos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.campo {
+  display: block;
+  margin-bottom: 26px;
+}
+
+.campo span {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cor-titulo);
+  margin-bottom: 8px;
+}
+
+/* o asterisco dos campos obrigatórios */
+.campo i {
+  color: #e05252;
+  font-style: normal;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  padding: 8px 2px;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid var(--cor-borda);
+  color: var(--cor-titulo);
+  font-family: var(--fonte-texto);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* a altura do campo de mensagem é ajustada pelo contato.js */
+.campo textarea {
+  resize: none;
+  overflow: hidden;
+  min-height: 38px;
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder {
+  color: var(--cor-texto);
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  outline: none;
+  border-bottom-color: var(--cor-azul);
+}
+
+.campo select option {
+  background-color: var(--cor-fundo);
+  color: var(--cor-titulo);
+}
+
+.aceite {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  cursor: pointer;
+}
+
+.aceite input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--cor-azul);
+  cursor: pointer;
+}
+
+.aceite span {
+  font-size: 0.88rem;
+}
+
+/* O aviso só aparece quando tem texto dentro */
+.retorno {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+.retorno:empty {
+  display: none;
+}
+
+.retorno.erro {
+  color: #e05252;
+  background-color: rgba(224, 82, 82, 0.1);
+  border-color: #e05252;
+}
+
+.retorno.certo {
+  color: #24a35e;
+  background-color: rgba(36, 163, 94, 0.12);
+  border-color: #24a35e;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .linha-campos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .linha-campos {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .assunto {
+    flex: 1 1 auto;
+    text-align: center;
   }
 }

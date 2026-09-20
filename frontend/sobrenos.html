@@ -151,6 +151,65 @@
       </section>
     </main>
 
+          <!-- ===================== CONTATO ===================== -->
+      <section class="secao" id="contato">
+        <div class="conteiner">
+          <h2 class="titulo-secao">Como podemos <span>ajudar?</span></h2>
+          <p class="texto-apoio">
+            Selecione abaixo as soluções que você procura.
+            Nossa equipe especializada estará pronta para ajudá-lo.
+          </p>
+
+          <!-- Os botões de assunto são marcados pelo contato.js -->
+          <div class="lista-assuntos" id="lista-assuntos">
+            <button type="button" class="assunto">Orçamento</button>
+            <button type="button" class="assunto">Dúvida técnica</button>
+            <button type="button" class="assunto">Suporte</button>
+            <button type="button" class="assunto">Parceria</button>
+            <button type="button" class="assunto">Visita técnica</button>
+            <button type="button" class="assunto">Outros</button>
+          </div>
+
+          <form class="formulario" id="formulario">
+            <div class="linha-campos">
+              <label class="campo">
+                <span>Nome <i>*</i></span>
+                <input type="text" id="nome" placeholder="Insira seu nome" />
+              </label>
+
+              <label class="campo">
+                <span>E-mail <i>*</i></span>
+                <input type="email" id="email" placeholder="Insira seu e-mail" />
+              </label>
+
+              <label class="campo">
+                <span>Telefone</span>
+                <input type="tel" id="telefone" placeholder="(11) 99999-9999" />
+              </label>
+
+              <label class="campo">
+                <span>Onde conheceu a LogiMind <i>*</i></span>
+                <input type="text" id="origem" placeholder="Instagram, feira, indicação..." />
+              </label>
+              </label>
+            </div>
+
+            <label class="campo">
+              <span>Mensagem <i>*</i></span>
+              <textarea id="mensagem" rows="1" placeholder="Insira sua mensagem"></textarea>
+            </label>
+
+            <label class="aceite">
+              <input type="checkbox" id="novidades" />
+              <span>Quero receber novidades do projeto por e-mail.</span>
+            </label>
+
+            <button class="botao botao-primario" type="submit">Enviar mensagem</button>
+            <p class="retorno" id="retorno"></p>
+          </form>
+        </div>
+      </section>
+
     <!-- ===================== RODAPÉ ===================== -->
     <footer class="rodape">
       <div class="conteiner rodape-interno">
@@ -172,5 +231,6 @@
     </footer>
 
     <script src="global.js"></script>
+    <script src="contato.js"></script>
   </body>
 </html>
