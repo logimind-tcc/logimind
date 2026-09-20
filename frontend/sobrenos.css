@@ -1,0 +1,142 @@
+/* ==========================================================
+   LOGIMIND - CSS DA PÁGINA QUEM SOMOS
+   Depende de global.css (variáveis, cabeçalho, rodapé)
+   ========================================================== */
+
+/* ---------- PAINEL DE APRESENTAÇÃO ---------- */
+.painel-equipe {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 40px;
+  margin-top: 36px;
+  background-color: var(--cor-fundo-alt);
+  border-radius: var(--raio-grande);
+  padding: 34px;
+}
+
+.texto-equipe {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+/* Espaço da ilustração. Fica tracejado enquanto a imagem não existir. */
+.equipe-ilustracao img {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  margin: 0 auto;
+  border-radius: var(--raio);
+}
+
+/* ---------- GRADE DE MEMBROS ---------- */
+/* Flex em vez de grid: assim a última linha, que tem menos
+   pessoas, fica centralizada em vez de encostada à esquerda. */
+.grade-membros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 34px 40px;
+  margin-top: 44px;
+  /* Largura de 3 colunas: assim ficam 3 pessoas em cima e 2 embaixo,
+     as duas linhas centralizadas, como no layout do Figma. */
+  max-width: 790px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.membro {
+  flex: 0 1 220px;
+  text-align: center;
+}
+
+/* Foto redonda. Se a imagem não existir, o círculo mostra as iniciais
+   que estão no atributo data-iniciais de cada membro. */
+.membro-foto {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--cor-azul);
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--cor-borda);
+  transition: border-color var(--transicao);
+}
+
+.membro-foto::before {
+  content: attr(data-iniciais);
+  font-family: var(--fonte-titulo);
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.membro-foto img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.membro:hover .membro-foto {
+  border-color: var(--cor-azul);
+}
+
+.membro-nome {
+  font-size: 1.02rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.membro-funcao {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cor-texto);
+  margin-bottom: 6px;
+}
+
+.membro-rede {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cor-azul);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transicao);
+}
+
+.membro-rede:hover {
+  border-color: var(--cor-azul);
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width: 900px) {
+  .painel-equipe {
+    grid-template-columns: 1fr;
+    gap: 26px;
+    padding: 24px;
+  }
+
+  .grade-membros {
+    gap: 30px 24px;
+  }
+
+  .membro {
+    flex: 0 1 180px;
+  }
+}
+
+@media (max-width: 520px) {
+  .membro {
+    flex: 0 1 100%;
+  }
+
+  .membro-foto {
+    width: 112px;
+    height: 112px;
+  }
+}
