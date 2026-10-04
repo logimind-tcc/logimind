@@ -1,0 +1,217 @@
+/* ==========================================================
+   LOGIMIND - CSS DA PÁGINA DO JOGO
+   Depende de global.css (variáveis, cabeçalho, rodapé)
+   ========================================================== */
+
+/* ---------- HISTÓRIA ---------- */
+.frase-jogo {
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+  font-weight: 700;
+  color: var(--cor-titulo);
+  margin-top: 12px;
+}
+
+.palavra-erro {
+  color: #e0433f;
+}
+
+.grade-historia {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 36px;
+}
+
+.bloco-historia {
+  border-left: 3px solid var(--cor-azul);
+  padding-left: 16px;
+}
+
+.bloco-historia p {
+  font-size: 0.93rem;
+  line-height: 1.7;
+}
+
+/* ---------- MOLDURA DAS IMAGENS ---------- */
+/* Usada na cena do jogo e nas três telas do gameplay.
+   Enquanto a imagem não existir, fica a moldura tracejada. */
+.moldura-arte {
+  aspect-ratio: 4 / 3;
+  border: 2px dashed var(--cor-borda);
+  border-radius: var(--raio);
+  overflow: hidden;
+  background-color: var(--cor-cartao);
+}
+
+.moldura-arte img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---------- A ANOMALIA ---------- */
+.painel-anomalia {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 28px;
+  margin-top: 36px;
+  align-items: start;
+}
+
+/* Cena do jogo com legenda embaixo */
+.cena {
+  margin: 0;
+}
+
+.cena figcaption {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  margin-top: 12px;
+  padding-left: 14px;
+  border-left: 3px solid var(--cor-azul);
+}
+
+/* ---------- MISSÕES ---------- */
+.bloco-missoes .etiqueta {
+  margin-bottom: 16px;
+}
+
+.missoes {
+  display: grid;
+  gap: 2px;
+  list-style: none;
+}
+
+.missao {
+  display: flex;
+  gap: 16px;
+  padding: 18px 4px;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.missao:last-child {
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.missao-numero {
+  font-family: "Courier New", monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--cor-azul);
+  padding-top: 2px;
+}
+
+.missao-titulo {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.missao p {
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+/* ---------- GALERIA ---------- */
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 32px;
+}
+
+/* ---------- VÍDEO E BOTÃO DE JOGAR ---------- */
+.painel-demo {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 32px;
+  margin-top: 32px;
+  align-items: center;
+}
+
+/* Espaço reservado do vídeo. Some quando o iframe entrar no lugar. */
+.area-video {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  border: 2px dashed var(--cor-azul);
+  border-radius: var(--raio-grande);
+  background-color: var(--cor-cartao);
+  color: var(--cor-azul);
+}
+
+.video-marcador {
+  text-align: center;
+}
+
+.video-marcador svg {
+  margin: 0 auto 10px;
+}
+
+.video-legenda {
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: var(--cor-titulo);
+}
+
+.video-observacao {
+  font-size: 0.85rem;
+  color: var(--cor-texto);
+  margin-top: 4px;
+}
+
+/* Usada quando o vídeo real entra no lugar do espaço reservado */
+.video-jogo {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+  border-radius: var(--raio-grande);
+  background-color: #000000;
+}
+
+.caixa-jogar {
+  background-color: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 26px;
+}
+
+.jogar-titulo {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.caixa-jogar p {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  margin-bottom: 18px;
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width: 900px) {
+  .grade-historia,
+  .painel-anomalia,
+  .painel-demo {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .galeria {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .galeria {
+    grid-template-columns: 1fr;
+  }
+
+  .caixa-jogar .botao {
+    width: 100%;
+    justify-content: center;
+  }
+}

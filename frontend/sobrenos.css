@@ -1,0 +1,328 @@
+/* ==========================================================
+   LOGIMIND - CSS DA PÁGINA QUEM SOMOS
+   Depende de global.css (variáveis, cabeçalho, rodapé)
+   ========================================================== */
+
+/* ---------- PAINEL DE APRESENTAÇÃO ---------- */
+.painel-equipe {
+  display: grid;
+  /* O texto ocupa a maior parte e a ilustração fica ao lado, menor. */
+  grid-template-columns: 1fr 250px;
+  align-items: start;
+  gap: 40px;
+  margin-top: 28px;
+}
+
+.texto-equipe {
+  font-size: 0.97rem;
+  line-height: 1.8;
+}
+
+/* ---------- ILUSTRAÇÃO DA EQUIPE ---------- */
+/* Cartão claro de cantos arredondados, como no Figma. */
+.equipe-ilustracao {
+  background-color: #eef3ff;
+  border-radius: 18px;
+  padding: 10px;
+  max-width: 250px;
+  margin-left: auto;
+  /* margin-top negativo sobe o cartão em relação ao texto */
+  margin-top: -80px;
+}
+
+/* max-width no cartão trava o tamanho: sem ele, uma imagem
+   grande estica e ocupa a página inteira. */
+.equipe-ilustracao img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* ---------- GRADE DE MEMBROS ---------- */
+/* Flex em vez de grid: assim a última linha, que tem menos
+   pessoas, fica centralizada em vez de encostada à esquerda. */
+.grade-membros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 34px 40px;
+  margin-top: 44px;
+  /* Largura de 3 colunas: assim ficam 3 pessoas em cima e 2 embaixo,
+     as duas linhas centralizadas, como no layout do Figma. */
+  max-width: 790px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.membro {
+  flex: 0 1 220px;
+  text-align: center;
+}
+
+/* Foto redonda. Se a imagem não existir, o círculo mostra as iniciais
+   que estão no atributo data-iniciais de cada membro. */
+.membro-foto {
+  position: relative;
+  width: 118px;
+  height: 118px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--cor-azul);
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--cor-borda);
+  transition: border-color var(--transicao);
+}
+
+.membro-foto::before {
+  content: attr(data-iniciais);
+  font-family: var(--fonte-titulo);
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.membro-foto img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.membro:hover .membro-foto {
+  border-color: var(--cor-azul);
+}
+
+.membro-nome {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.membro-funcao {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--cor-texto);
+  margin-bottom: 1px;
+}
+
+.membro-rede {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--cor-texto);
+  border-bottom: 1px solid transparent;
+  transition: color var(--transicao), border-color var(--transicao);
+}
+
+.membro-rede:hover {
+  color: var(--cor-azul);
+  border-color: var(--cor-azul);
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width: 900px) {
+  .painel-equipe {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+    /* zera o recuo do desktop, senão a imagem sobe por cima do texto */
+  .equipe-ilustracao {
+    margin: 0 auto;
+    max-width: 200px;
+  }
+
+  .grade-membros {
+    gap: 30px 24px;
+  }
+
+  .membro {
+    flex: 0 1 180px;
+  }
+}
+
+@media (max-width: 560px) {
+  .equipe-ilustracao {
+    max-width: 160px;
+  }
+}
+
+@media (max-width: 520px) {
+  .membro {
+    flex: 0 1 100%;
+  }
+
+  .membro-foto {
+    width: 112px;
+    height: 112px;
+  }
+}
+
+/* ---------- CONTATO ---------- */
+.lista-assuntos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.assunto {
+  padding: 11px 18px;
+  background-color: transparent;
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;
+  color: var(--cor-titulo);
+  font-family: var(--fonte-texto);
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color var(--transicao), color var(--transicao);
+}
+
+.assunto:hover {
+  border-color: var(--cor-azul);
+  color: var(--cor-azul);
+}
+
+/* classe trocada pelo contato.js quando o assunto é escolhido */
+.assunto.marcado {
+  background-color: var(--cor-azul);
+  border-color: var(--cor-azul);
+  color: #ffffff;
+}
+
+.formulario {
+  margin-top: 36px;
+}
+
+.linha-campos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.campo {
+  display: block;
+  margin-bottom: 26px;
+}
+
+.campo span {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cor-titulo);
+  margin-bottom: 8px;
+}
+
+/* o asterisco dos campos obrigatórios */
+.campo i {
+  color: #e05252;
+  font-style: normal;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  padding: 8px 2px;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid var(--cor-borda);
+  color: var(--cor-titulo);
+  font-family: var(--fonte-texto);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* a altura do campo de mensagem é ajustada pelo contato.js */
+.campo textarea {
+  resize: none;
+  overflow: hidden;
+  min-height: 38px;
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder {
+  color: var(--cor-texto);
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  outline: none;
+  border-bottom-color: var(--cor-azul);
+}
+
+.campo select option {
+  background-color: var(--cor-fundo);
+  color: var(--cor-titulo);
+}
+
+.aceite {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  cursor: pointer;
+}
+
+.aceite input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--cor-azul);
+  cursor: pointer;
+}
+
+.aceite span {
+  font-size: 0.88rem;
+}
+
+/* O aviso só aparece quando tem texto dentro */
+.retorno {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+.retorno:empty {
+  display: none;
+}
+
+.retorno.erro {
+  color: #e05252;
+  background-color: rgba(224, 82, 82, 0.1);
+  border-color: #e05252;
+}
+
+.retorno.certo {
+  color: #24a35e;
+  background-color: rgba(36, 163, 94, 0.12);
+  border-color: #24a35e;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .linha-campos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .linha-campos {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .assunto {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}

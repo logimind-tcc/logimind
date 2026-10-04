@@ -1,0 +1,87 @@
+/* ==========================================================
+   LOGIMIND - CSS DA PÁGINA DE REFERÊNCIAS
+   Depende de global.css (variáveis, cabeçalho, rodapé)
+   ========================================================== */
+
+/* ---------- PAINEL COM AS OBRAS ---------- */
+/* max-width + margin auto deixam a caixa centralizada e mais estreita */
+.painel-referencias {
+  max-width: 760px;
+  margin-top: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  left: 20px;
+  background-color: #d9d9d9;
+  border-radius: var(--raio-grande);
+  padding: 30px 36px;
+  display: grid;
+  gap: 20px;
+}
+
+/* no tema escuro a caixa acompanha o fundo do site */
+[data-tema="escuro"] .painel-referencias {
+  background-color: var(--cor-fundo-alt);
+}
+
+.referencia {
+  text-align: center;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(11, 18, 32, 0.15);
+}
+
+[data-tema="escuro"] .referencia {
+  border-bottom-color: var(--cor-borda);
+}
+
+.referencia:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.referencia-titulo {
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+
+.referencia-titulo a {
+  color: var(--cor-titulo);
+  border-bottom: 2px solid transparent;
+  transition: color var(--transicao), border-color var(--transicao);
+}
+
+.referencia-titulo a:hover {
+  color: var(--cor-azul);
+  border-color: var(--cor-azul);
+}
+
+.referencia-texto {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  max-width: 620px;
+  margin: 0 auto;
+  color: #38405a;
+}
+
+[data-tema="escuro"] .referencia-texto {
+  color: var(--cor-texto);
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width: 700px) {
+  .painel-referencias {
+    padding: 22px;
+    gap: 18px;
+    left: 0;
+  }
+
+  .referencia-titulo {
+    font-size: 0.96rem;
+  }
+
+  .referencia-texto {
+    font-size: 0.89rem;
+  }
+}
