@@ -15,9 +15,19 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!botaoCadastrar) {
     }
 
+    let temporizador;
+
   function mostrarAviso(mensagem, tipo) {
+    clearTimeout(temporizador);
     aviso.textContent = mensagem;
     aviso.className = `aviso-cadastro ${tipo}`;
+
+    if (tipo === "sucesso") {
+      temporizador = setTimeout(() => {
+        aviso.textContent = "";
+        aviso.className = "aviso-cadastro";
+      }, 5000);
+    }
   }
 
   function emailValido(email) {
@@ -54,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error("Servidor respondeu com erro");
       }
 
-      mostrarAviso("Cadastro feito! Enviamos a demonstracao para o seu e-mail.", "sucesso");
+      mostrarAviso("Cadastro feito! Enviamos um e-mail de boas-vindas para você.", "sucesso");
       campoNome.value = "";
       campoEmail.value = "";
     } catch (erro) {
