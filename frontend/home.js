@@ -4,7 +4,8 @@
    ========================================================== */
 
 // Troque pelo endereco do servidor publicado quando subir o back-end.
-const ENDERECO_SERVIDOR = "http://localhost:8080";
+// No computador (localhost:8080) usa o servidor local; na Vercel, usa o servidor online (Render)
+const ENDERECO_SERVIDOR = location.port === "8080" ? "" : "https://logimind.onrender.com";
 
 document.addEventListener("DOMContentLoaded", () => {
   const campoNome = document.getElementById("campo-nome");
