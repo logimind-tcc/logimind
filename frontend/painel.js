@@ -10,9 +10,11 @@
 // Site e banco conversam pelo servidor (backend/servidor.js).
 
 // Configuração
-// Endereço do servidor. Se o painel foi aberto pelo próprio servidor
-// (http://localhost:8080/painel.html), usa o mesmo endereço.
-const API = location.port === "8080" ? "" : "http://localhost:8080";
+// Endereço do servidor na internet (Render). Troque pelo endereço do SEU serviço.
+const SERVIDOR_ONLINE = "https://logimind-servidor.onrender.com";
+// Se o painel foi aberto pelo próprio servidor (localhost:8080 ou o Render),
+// usa o mesmo endereço. Se foi aberto pela Vercel, usa o servidor online.
+const API = (location.port === "8080" || location.hostname.endsWith("onrender.com")) ? "" : SERVIDOR_ONLINE;
 const VELOCIDADE_USB = 115200;   // a mesma do Serial.begin() do ESP32
 
 // Caminhões
