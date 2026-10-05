@@ -4,22 +4,20 @@
 (function () {
 
 // Painel da esteira - LOGIMIND
-// A webcam do notebook lê o QR Code da caixa. O site busca o pedido,
-// escolhe o caminhão e a transportadora e manda o ESP32 mover o braço.
-// Site e ESP32 conversam por MQTT (broker na nuvem).
+// A webcam do notebook lê o QR Code da caixa. O site busca o pedido no banco
+// (Aiven), escolhe o caminhão e a transportadora e manda o ESP32 mover o braço.
+// Site e ESP32 conversam pelo CABO USB (Web Serial do Chrome/Edge).
+// Site e banco conversam pelo servidor (backend/servidor.js).
 
 // Configuração
-// Troque "logimind-unasp" por um nome só do grupo, para ninguém mais usar os mesmos tópicos.
-const PREFIXO = "logimind-unasp/esteira";
-const ENDERECO_BROKER = "wss://broker.hivemq.com:8884/mqtt";
-
-const TOPICO_STATUS  = PREFIXO + "/status";   // ESP32 -> site: estado da esteira e do sensor
-const TOPICO_COMANDO = PREFIXO + "/comando";  // site -> ESP32: "ligar", "parar", "desviar:A", "desviar:B", "desviar:C"
+// Endereço do servidor. Se o painel foi aberto pelo próprio servidor
+// (http://localhost:8080/painel.html), usa o mesmo endereço.
+const API = location.port === "8080" ? "" : "http://localhost:8080";
+const VELOCIDADE_USB = 115200;   // a mesma do Serial.begin() do ESP32
 
 // Caminhões
 // Do menor para o maior. Carga útil em kg e medidas INTERNAS do baú em cm.
 // Valores aproximados.
-// Usar os MESMOS valores no código do ESP32.
 const VEICULOS = [
   { nome: "VUC",      pesoMax: 3000,  comprimento: 420,  largura: 210, altura: 210 },
   { nome: "3/4",      pesoMax: 4000,  comprimento: 550,  largura: 240, altura: 230 },
@@ -30,18 +28,14 @@ const VEICULOS = [
   { nome: "Rodotrem", pesoMax: 50000, comprimento: 2500, largura: 248, altura: 270 }
 ];
 
-// Pedidos de exemplo: usados só na primeira vez que a página abre.
-// Depois, os pedidos ficam na planilha de recebimentos (salva no navegador).
+// Pedidos de exemplo: usados SÓ quando o servidor/banco não responde
+// (aí a planilha fica salva no navegador, como antes).
+// Com o banco funcionando, os pedidos vêm da tabela "pedidos" do Aiven.
 // O texto do QR Code é o código do pedido (ex.: "P01").
-// Medidas em cm e peso em kg de UM volume.
-// Mais para frente, estes dados vão vir do banco MySQL.
 const PEDIDOS_INICIAIS = {
   P01: { tipo: "Frágil",   quantidade: 4,  comprimento: 120, largura: 100, altura: 150, pesoUnidade: 300,  empilhavel: false },
-  P02: { tipo: "Volumosa", quantidade: 14, comprimento: 120, largura: 100, altura: 180, pesoUnidade: 80,   empilhavel: true  },
-  P03: { tipo: "Pesada",   quantidade: 10, comprimento: 120, largura: 100, altura: 100, pesoUnidade: 900,  empilhavel: true  },
-  P04: { tipo: "Comum",    quantidade: 26, comprimento: 120, largura: 100, altura: 120, pesoUnidade: 1000, empilhavel: true  },
-  P05: { tipo: "Comum",    quantidade: 2,  comprimento: 120, largura: 100, altura: 120, pesoUnidade: 500,  empilhavel: true  },
-  P06: { tipo: "Larga",    quantidade: 2,  comprimento: 300, largura: 230, altura: 100, pesoUnidade: 500,  empilhavel: false }
+  P02: { tipo: "Volumosa", quantidade: 2,  comprimento: 120, largura: 100, altura: 220, pesoUnidade: 200,  empilhavel: true  },
+  P03: { tipo: "Pesada",   quantidade: 26, comprimento: 120, largura: 100, altura: 120, pesoUnidade: 1000, empilhavel: true  }
 };
 
 // Preço do frete de cada transportadora para cada caminhão (R$).
@@ -66,6 +60,7 @@ const luzConexao     = document.getElementById("luzConexao");
 const textoConexao   = document.getElementById("textoConexao");
 const estadoEsteira  = document.getElementById("estadoEsteira");
 const estadoSensor   = document.getElementById("estadoSensor");
+const estadoBanco    = document.getElementById("estadoBanco");
 const ultimoPallet   = document.getElementById("ultimoPallet");
 const totalCargas    = document.getElementById("totalCargas");
 const custoTotal     = document.getElementById("custoTotal");
@@ -73,12 +68,12 @@ const corpoHistorico = document.getElementById("corpoHistorico");
 const verificacao    = document.getElementById("verificacaoVeiculos");
 const botaoLigar     = document.getElementById("botaoLigar");
 const botaoParar     = document.getElementById("botaoParar");
+const botaoUSB       = document.getElementById("botaoUSB");
 const botaoDemo      = document.getElementById("botaoDemo");
 const avisoLeitor    = document.getElementById("avisoLeitor");
 
 let contagem = { A: 0, B: 0, C: 0 };
 let somaFrete = 0;
-let cliente = null;
 let modoDemo = false;
 let temporizadorDemo = null;
 let estavaConectado = false;
@@ -201,7 +196,7 @@ function voceDisse(texto, tocou = false) {
 
 // Tira acentos e deixa minúsculo para comparar as palavras
 function simplificar(texto) {
-  return texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return texto.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
 
 function contem(texto, palavras) {
@@ -628,39 +623,103 @@ function mostrarVerificacao(p) {
     </figure>`;
 }
 
-// Conexão MQTT
-function conectar() {
-  if (typeof mqtt === "undefined") {
-    // A biblioteca de conexão não carregou (sem internet?): o resto do painel continua funcionando
-    mudarConexao("desligada", "Sem internet para conectar");
+// =====================================================================
+// Conexão com o ESP32 pelo CABO USB (Web Serial)
+// Funciona no Chrome e no Edge do computador, com o painel aberto em
+// http://localhost:8080/painel.html. O Monitor Serial do Arduino IDE
+// precisa estar FECHADO (só um programa pode usar a porta por vez).
+//
+// O ESP32 manda uma linha por mensagem, no formato:
+//   {"online":true,"esteira":"rodando","carga":false}
+//   {"braco":"A"}   (o braço começou a levar a caixa para a saída A)
+//   {"braco":"pronto"}
+// O painel manda: ligar, parar, desviar:A, desviar:B, desviar:C, cancelar, status
+// =====================================================================
+let porta = null;
+let escritor = null;
+let leitor = null;
+
+function usbConectado() { return escritor !== null; }
+
+async function conectarUSB(portaJaPermitida) {
+  if (!("serial" in navigator)) {
+    mudarConexao("desligada", "Navegador sem USB");
+    logiDiz("Para conectar a esteira pelo cabo USB, abra o painel no Chrome ou no Edge do computador.");
     return;
   }
-  cliente = mqtt.connect(ENDERECO_BROKER, {
-    clientId: "painel-" + Math.random().toString(16).slice(2, 8),
-    reconnectPeriod: 3000
-  });
+  if (usbConectado()) return;
+  try {
+    porta = portaJaPermitida || await navigator.serial.requestPort();
+    await porta.open({ baudRate: VELOCIDADE_USB });
+  } catch (erro) {
+    porta = null;
+    if (erro.name === "NotFoundError") return;   // a pessoa fechou a janela sem escolher
+    mudarConexao("desligada", "Porta USB ocupada");
+    logiDiz("Não consegui abrir a porta USB. Feche o Monitor Serial do Arduino IDE e tente de novo.");
+    return;
+  }
+  escritor = porta.writable.getWriter();
+  estavaConectado = true;
+  botaoUSB.textContent = "Esteira no USB";
+  botaoUSB.disabled = true;
+  mudarConexao("ligada", "Esperando a esteira");
+  ouvirUSB();
+  setTimeout(() => enviarTexto("status"), 1500);
+}
 
-  cliente.on("connect", () => {
-    mudarConexao("ligada", "Esperando a esteira");
-    cliente.subscribe(TOPICO_STATUS);
-    
-    estavaConectado = true;
-  });
+// Lê o que o ESP32 manda, linha por linha
+async function ouvirUSB() {
+  const decodificador = new TextDecoder();
+  let sobra = "";
+  try {
+    leitor = porta.readable.getReader();
+    while (true) {
+      const { value, done } = await leitor.read();
+      if (done) break;
+      sobra += decodificador.decode(value, { stream: true });
+      const linhas = sobra.split("\n");
+      sobra = linhas.pop();
+      linhas.forEach(tratarLinha);
+    }
+  } catch (erro) {
+    // o cabo foi desligado ou o ESP32 reiniciou
+  }
+  usbDesconectou();
+}
 
-  const aoDesconectar = (texto) => {
-    mudarConexao("desligada", texto);
-    if (estavaConectado) logiDiz("Perdi a conexão com a esteira. Confira se o ESP32 está ligado e no Wi-Fi.");
-    estavaConectado = false;
-  };
-  cliente.on("reconnect", () => aoDesconectar("Reconectando..."));
-  cliente.on("offline",   () => aoDesconectar("Desconectado"));
-  cliente.on("error",     () => aoDesconectar("Erro na conexão"));
+function tratarLinha(linha) {
+  linha = linha.trim();
+  if (!linha.startsWith("{")) return;   // textos para o Monitor Serial: o painel ignora
+  let dados;
+  try { dados = JSON.parse(linha); } catch { return; }
+  atualizarStatus(dados);
+}
 
-  cliente.on("message", (topico, mensagem) => {
-    let dados;
-    try { dados = JSON.parse(mensagem.toString()); } catch { return; }
-    if (topico === TOPICO_STATUS) atualizarStatus(dados);
-  });
+async function usbDesconectou() {
+  try { if (leitor) leitor.releaseLock(); } catch {}
+  try { if (escritor) escritor.releaseLock(); } catch {}
+  try { if (porta) await porta.close(); } catch {}
+  leitor = null;
+  escritor = null;
+  porta = null;
+  esteiraOnline = false;
+  botaoUSB.textContent = "Conectar esteira (USB)";
+  botaoUSB.disabled = false;
+  mudarConexao("desligada", "Cabo USB desconectado");
+  if (estavaConectado) logiDiz("Perdi a conexão com a esteira. Confira o cabo USB e clique em Conectar esteira.");
+  estavaConectado = false;
+}
+
+async function enviarTexto(texto) {
+  if (!escritor) return;
+  try { await escritor.write(new TextEncoder().encode(texto + "\n")); } catch (e) { /* cabo saiu */ }
+}
+
+// Se a porta já foi permitida antes, conecta sozinho ao abrir o painel
+async function reconectarSozinho() {
+  if (!("serial" in navigator)) return;
+  const portas = await navigator.serial.getPorts();
+  if (portas.length === 1) conectarUSB(portas[0]);
 }
 
 function mudarConexao(classe, texto) {
@@ -689,10 +748,10 @@ function enviarComando(comando) {
     atualizarStatus({ esteira: comando === "ligar" ? "rodando" : "parada", carga: false });
     return;
   }
-  if (cliente && cliente.connected) {
-    cliente.publish(TOPICO_COMANDO, comando);
+  if (usbConectado()) {
+    enviarTexto(comando);
   } else {
-    logiDiz("Ainda não estou conectado à esteira, então não consigo mandar esse comando.");
+    logiDiz("Ainda não estou conectado à esteira. Clique em Conectar esteira e escolha a porta do ESP32.");
   }
 }
 
@@ -709,7 +768,7 @@ function atualizarStatus(dados) {
       luzConexao.className = "luz desligada";
       textoConexao.textContent = "Esteira desligada";
       mostrarDesconectado();
-      logiDiz("A esteira desconectou. Confira se o ESP32 está ligado e no Wi-Fi.");
+      logiDiz("A esteira desconectou. Confira se o ESP32 está ligado no cabo USB.");
     }
     return;
   }
@@ -719,6 +778,12 @@ function atualizarStatus(dados) {
     luzConexao.className = "luz ligada conectada";
     textoConexao.textContent = "Esteira conectada";
     logiDiz("A esteira está conectada. Já posso controlar o motor e o braço.");
+  }
+  // O braço avisa quando começa e quando termina
+  if (dados.braco) {
+    textoCamera.textContent = dados.braco === "pronto"
+      ? "Braço terminou. A esteira volta a andar."
+      : `Braço levando a caixa para a saída ${dados.braco}...`;
   }
   if (dados.esteira !== undefined) {
     const rodando = dados.esteira === "rodando";
@@ -750,12 +815,14 @@ function registrarCarga(c) {
   ultimaCarga = c;
 
   expedicao.unshift({
-    data: new Date().toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }),
+    data: formatarData(new Date()),
     pedido: c.pedido, tipo: c.tipo, quantidade: c.quantidade, pesoTotal: pesoTotal(c),
     caminhao: c.veiculo, transportadora: letra, frete: c.frete
   });
   if (pedidos[c.pedido]) pedidos[c.pedido].situacao = "enviado";
   salvarPlanilha();
+  enviarAoBanco("POST", "/api/expedicao",
+    { pedido: c.pedido, caminhao: c.veiculo, transportadora: letra, frete: c.frete });
 
   ultimoPallet.textContent = c.pedido;
   mostrarVerificacao(c);
@@ -772,7 +839,7 @@ function registrarCarga(c) {
 function atualizarTotais() {
   contagem = { A: 0, B: 0, C: 0 };
   somaFrete = 0;
-  expedicao.forEach(e => { contagem[e.transportadora]++; somaFrete += Number(e.frete) || 0; });
+  expedicao.forEach(e => { if (contagem.hasOwnProperty(e.transportadora)) contagem[e.transportadora]++; somaFrete += Number(e.frete) || 0; });
   for (const letra of ["A", "B", "C"]) {
     const cartao = document.getElementById("transp" + letra);
     cartao.querySelector(".quantidade").textContent = contagem[letra];
@@ -828,7 +895,7 @@ function confirmarPendente() {
 
 function cancelarPendente() {
   pendente = null;
-  if (!modoDemo && cliente && cliente.connected) cliente.publish(TOPICO_COMANDO, "cancelar");
+  if (!modoDemo && usbConectado()) enviarTexto("cancelar");
   textoCamera.textContent = "Desvio cancelado.";
   logiDiz("Tudo bem, não vou desviar essa caixa. A esteira vai voltar a andar sem mexer no braço.");
 }
@@ -838,7 +905,7 @@ function concluirPedido(c) {
   registrarCarga(c);
   textoCamera.textContent = `Pedido ${c.pedido} enviado para a saída ${c.transportadora}.`;
   if (!modoDemo) {
-    if (cliente && cliente.connected) cliente.publish(TOPICO_COMANDO, "desviar:" + c.transportadora);
+    if (usbConectado()) enviarTexto("desviar:" + c.transportadora);
     else textoCamera.textContent += " O ESP32 não está conectado, então o braço não foi acionado.";
   }
 }
@@ -892,7 +959,7 @@ let ultimaLeitura = 0;
 
 async function ligarCamera(idCamera) {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    textoCamera.textContent = "Este navegador não deixa usar a câmera. Abra o site pelo endereço com https ou pelo Live Server.";
+    textoCamera.textContent = "Este navegador não deixa usar a câmera. Abra o painel pelo endereço http://localhost:8080/painel.html.";
     return;
   }
   if (fluxoCamera) fluxoCamera.getTracks().forEach(t => t.stop());
@@ -990,16 +1057,85 @@ function desenharMoldura(resultado) {
   ctx.fillText(texto, x + 8, y - 6);
 }
 
+// =====================================================================
 // Planilha de pedidos (recebimentos e expedição)
-// Fica salva no próprio navegador (localStorage). Mais para frente, vai para o MySQL.
+// Com o servidor ligado, tudo fica no BANCO (Aiven): tabelas "pedidos" e
+// "expedicao". Se o servidor não responder, o painel continua funcionando
+// e salva só neste navegador (como era antes).
+// =====================================================================
 const CHAVE_PEDIDOS = "logimind_recebimentos";
 const CHAVE_EXPEDICAO = "logimind_expedicao";
 let pedidos = {};
 let expedicao = [];
+let usandoBanco = false;
 let codigoNaoEncontrado = null;
 let editando = null;
 
-function carregarPlanilha() {
+function mostrarBanco(texto, classe) {
+  if (!estadoBanco) return;
+  estadoBanco.textContent = texto;
+  estadoBanco.className = classe;
+}
+
+// Conversa com o servidor. Devolve a resposta em JSON (ou dá erro).
+async function chamarServidor(metodo, caminho, corpo) {
+  const opcoes = { method: metodo, headers: { "Content-Type": "application/json" } };
+  if (corpo) opcoes.body = JSON.stringify(corpo);
+  const resposta = await fetch(API + caminho, opcoes);
+  const dados = await resposta.json().catch(() => ({}));
+  if (!resposta.ok) throw new Error(dados.mensagem || "erro " + resposta.status);
+  return dados;
+}
+
+// Salva no banco sem travar a tela. Se der errado, avisa e recarrega do banco.
+function enviarAoBanco(metodo, caminho, corpo) {
+  if (!usandoBanco) return Promise.resolve();
+  return chamarServidor(metodo, caminho, corpo).catch(async (erro) => {
+    avisar("Não consegui salvar no banco: " + erro.message, "erro");
+    logiDiz("Não consegui salvar no banco de dados. " + erro.message);
+    await carregarDoBanco().catch(() => {});
+    mostrarTudo();
+  });
+}
+
+// Linha do banco -> pedido do painel
+function pedidoDoBanco(linha) {
+  return {
+    tipo: linha.tipo,
+    quantidade: Number(linha.quantidade),
+    comprimento: Number(linha.comprimento),
+    largura: Number(linha.largura),
+    altura: Number(linha.altura),
+    pesoUnidade: Number(linha.peso_unidade),
+    empilhavel: Boolean(Number(linha.empilhavel)),
+    situacao: linha.situacao
+  };
+}
+
+function formatarData(data) {
+  return new Date(data).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
+
+async function carregarDoBanco() {
+  const [linhasPedidos, linhasExpedicao] = await Promise.all([
+    chamarServidor("GET", "/api/pedidos"),
+    chamarServidor("GET", "/api/expedicao")
+  ]);
+  pedidos = {};
+  linhasPedidos.forEach(l => { pedidos[l.codigo] = pedidoDoBanco(l); });
+  expedicao = linhasExpedicao.map(l => ({
+    data: formatarData(l.data_hora),
+    pedido: l.pedido,
+    tipo: l.tipo,
+    quantidade: Number(l.quantidade),
+    pesoTotal: Number(l.quantidade) * Number(l.peso_unidade),
+    caminhao: l.caminhao,
+    transportadora: l.transportadora,
+    frete: Number(l.frete)
+  }));
+}
+
+function carregarDoNavegador() {
   try {
     const salvos = JSON.parse(localStorage.getItem(CHAVE_PEDIDOS));
     const enviados = JSON.parse(localStorage.getItem(CHAVE_EXPEDICAO));
@@ -1015,20 +1151,42 @@ function carregarPlanilha() {
   }
 }
 
+async function carregarPlanilha() {
+  mostrarBanco("conectando...", "apagado");
+  try {
+    await carregarDoBanco();
+    usandoBanco = true;
+    mostrarBanco("Aiven (nuvem)", "texto-verde");
+  } catch (erro) {
+    usandoBanco = false;
+    carregarDoNavegador();
+    mostrarBanco("só neste navegador", "texto-destaque");
+    console.warn("Servidor/banco não respondeu, usando o navegador:", erro.message);
+  }
+}
+
 function salvarPlanilha() {
+  if (usandoBanco) return;   // com banco, cada mudança já vai para o servidor
   try {
     localStorage.setItem(CHAVE_PEDIDOS, JSON.stringify(pedidos));
     localStorage.setItem(CHAVE_EXPEDICAO, JSON.stringify(expedicao));
   } catch (e) { /* navegador sem permissão para salvar: continua funcionando sem guardar */ }
 }
 
-// Coloca um pedido na planilha (usado pelo formulário e pelo Logi)
-function cadastrarPedido(codigo, dados) {
-  const existia = !!pedidos[codigo];
-  pedidos[codigo] = { ...dados, situacao: pedidos[codigo] ? pedidos[codigo].situacao : "aguardando" };
+// Coloca um pedido na planilha (usado pelo formulário e pelo Logi).
+// codigoAntigo: quando é uma edição, o código que o pedido tinha antes.
+function cadastrarPedido(codigo, dados, codigoAntigo) {
+  const antigo = codigoAntigo ? pedidos[codigoAntigo] : pedidos[codigo];
+  const situacao = antigo ? antigo.situacao : "aguardando";
+  if (codigoAntigo && codigoAntigo !== codigo) delete pedidos[codigoAntigo];
+  pedidos[codigo] = { ...dados, situacao };
   salvarPlanilha();
   mostrarRecebimentos(codigo);
-  return existia;
+
+  const corpo = { codigo, ...dados };
+  if (codigoAntigo) enviarAoBanco("PUT", "/api/pedidos/" + encodeURIComponent(codigoAntigo), corpo);
+  else enviarAoBanco("POST", "/api/pedidos", corpo);
+  return !!antigo;
 }
 
 const corpoRecebimentos = document.getElementById("corpoRecebimentos");
@@ -1080,11 +1238,17 @@ function mostrarExpedicao() {
     <tr>
       <td>${e.data}</td>
       <td><strong>${e.pedido}</strong></td>
-      <td>${e.quantidade} × ${e.tipo.toLowerCase()}, ${formatarPeso(e.pesoTotal)}</td>
+      <td>${e.quantidade} × ${String(e.tipo).toLowerCase()}, ${formatarPeso(e.pesoTotal)}</td>
       <td>${e.caminhao}</td>
       <td><span class="etiqueta etiqueta-${e.transportadora}">${e.transportadora}</span></td>
       <td>${formatarReais(e.frete)}</td>
     </tr>`).join("");
+}
+
+function mostrarTudo() {
+  mostrarRecebimentos();
+  mostrarExpedicao();
+  atualizarTotais();
 }
 
 // Formulário
@@ -1115,9 +1279,8 @@ formPedido.addEventListener("submit", (e) => {
   e.preventDefault();
   const { codigo, dados } = lerFormulario();
   if (!codigo) return avisar("Preencha o código do pedido.", "erro");
-  if (!editando && pedidos[codigo]) return avisar(`Já existe um pedido ${codigo}. Use "Editar" na tabela para mudar.`, "erro");
-  if (editando && editando !== codigo) delete pedidos[editando];
-  cadastrarPedido(codigo, dados);
+  if (pedidos[codigo] && codigo !== editando) return avisar(`Já existe um pedido ${codigo}. Use "Editar" na tabela para mudar.`, "erro");
+  cadastrarPedido(codigo, dados, editando);
   const caminhao = caminhaoIdeal({ ...dados, pedido: codigo });
   avisar(editando ? `Pedido ${codigo} atualizado.` : `Pedido ${codigo} cadastrado. Ele vai de ${caminhao}.`, "ok");
   sairDaEdicao();
@@ -1144,8 +1307,10 @@ corpoRecebimentos.addEventListener("click", (e) => {
   }
   if (apagar && confirm(`Apagar o pedido ${apagar} da planilha?`)) {
     delete pedidos[apagar];
+    expedicao = expedicao.filter(e => e.pedido !== apagar);
     salvarPlanilha();
-    mostrarRecebimentos();
+    enviarAoBanco("DELETE", "/api/pedidos/" + encodeURIComponent(apagar));
+    mostrarTudo();
     avisar(`Pedido ${apagar} apagado.`);
   }
 });
@@ -1188,7 +1353,7 @@ function baixarPlanilha(qual) {
     let s = typeof v === "number" ? String(v).replace(".", ",") : String(v ?? "");
     return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   }).join(";")).join("\r\n");
-  const arquivo = new Blob(["\ufeff" + texto], { type: "text/csv;charset=utf-8" });
+  const arquivo = new Blob(["﻿" + texto], { type: "text/csv;charset=utf-8" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(arquivo);
   link.download = `logimind-${qual}.csv`;
@@ -1202,9 +1367,8 @@ document.getElementById("botaoLimparExpedicao").addEventListener("click", () => 
   expedicao = [];
   Object.values(pedidos).forEach(p => p.situacao = "aguardando");
   salvarPlanilha();
-  atualizarTotais();
-  mostrarRecebimentos();
-  mostrarExpedicao();
+  enviarAoBanco("DELETE", "/api/expedicao");
+  mostrarTudo();
 });
 
 // Formatação
@@ -1214,14 +1378,7 @@ function falarPeso(p) {
   if (p >= 1000) return formatarNumero(p / 1000) + (p === 1000 ? " tonelada" : " toneladas");
   return formatarNumero(p) + " quilos";
 }
-function formatarMedidas(c) { return `${c.comprimento} × ${c.largura} × ${c.altura} cm`; }
-function formatarMedidasBau(v) { return `${formatarNumero(v.comprimento / 100)} × ${formatarNumero(v.largura / 100)} × ${formatarNumero(v.altura / 100)} m`; }
 function formatarReais(v) { return Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
-function falarReais(v) {
-  const reais = Math.floor(v);
-  const centavos = Math.round((v - reais) * 100);
-  return centavos ? `${reais} reais e ${centavos} centavos` : `${reais} reais`;
-}
 
 // Modo demonstração
 // Simula a esteira para testar o site sem o protótipo e sem câmera.
@@ -1247,9 +1404,9 @@ function alternarDemo() {
       luzConexao.className = "luz ligada conectada";
       textoConexao.textContent = "Esteira conectada";
     } else {
-      const servidor = cliente && cliente.connected;
-      luzConexao.className = "luz " + (servidor ? "ligada" : "desligada");
-      textoConexao.textContent = servidor ? "Esperando a esteira" : "Desconectado";
+      const usb = usbConectado();
+      luzConexao.className = "luz " + (usb ? "ligada" : "desligada");
+      textoConexao.textContent = usb ? "Esperando a esteira" : "Desconectado";
       mostrarDesconectado();
     }
   }
@@ -1269,6 +1426,7 @@ function simularCarga() {
 // Início
 botaoLigar.addEventListener("click", () => enviarComando("ligar"));
 botaoParar.addEventListener("click", () => enviarComando("parar"));
+botaoUSB.addEventListener("click", () => conectarUSB());
 botaoDemo.addEventListener("click", alternarDemo);
 botaoComecar.addEventListener("click", acordarLogi);
 botaoVoz.addEventListener("click", alternarSom);
@@ -1276,22 +1434,16 @@ botaoMicrofone.addEventListener("click", alternarMicrofone);
 botaoCamera.addEventListener("click", () => ligarCamera());
 escolhaCamera.addEventListener("change", () => ligarCamera(escolhaCamera.value));
 
-// Tema claro / escuro (botão do sol e da lua no cabeçalho)
-// Fica salvo no navegador, então o painel lembra a última escolha.
-
 if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = escolherVoz;
-
-// Carrega a planilha salva e mostra tudo
-carregarPlanilha();
-mostrarRecebimentos();
-mostrarExpedicao();
-atualizarTotais();
 
 // Antes do primeiro pedido mostra só os caminhões
 mostrarFila(null);
-
 expressao("dormindo");
-conectar();
+mostrarDesconectado();
 window.painelIniciado = true;
+
+// Carrega a planilha (do banco, ou do navegador se o servidor não responder)
+carregarPlanilha().then(mostrarTudo);
+reconectarSozinho();
 
 })();

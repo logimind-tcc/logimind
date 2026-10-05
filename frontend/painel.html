@@ -12,8 +12,9 @@
   <link rel="stylesheet" href="global.css" />
   <link rel="stylesheet" href="painel.css">
   <!-- MQTT (comunicação com o ESP32) e leitor de QR Code -->
-  <script src="https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js"></script>
+    <!-- Leitor de QR Code -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
 </head>
 <body>
 
@@ -95,6 +96,8 @@
                 <span class="selo">Esteira <strong id="estadoEsteira" class="apagado">sem conexão</strong></span>
                 <span class="selo">Sensor <strong id="estadoSensor" class="apagado">sem conexão</strong></span>
                 <span class="selo">Último código <strong id="ultimoPallet">nenhum</strong></span>
+                <span class="selo">Banco <strong id="estadoBanco" class="apagado">conectando...</strong></span>
+
               </div>
               <p id="textoCamera" class="texto-camera">Aguardando a câmera.</p>
               <select id="escolhaCamera" class="escolha-camera" aria-label="Escolher câmera" hidden></select>
@@ -118,10 +121,11 @@
             <p class="resumo-dia"><span id="totalCargas">Nenhuma caixa separada ainda.</span> <span id="custoTotal"></span></p>
 
             <div class="controles">
+              <button id="botaoUSB" class="botao botao-azul">Conectar esteira (USB)</button>              
               <button id="botaoLigar" class="botao botao-verde" disabled>Ligar esteira</button>
               <button id="botaoParar" class="botao botao-vermelho" disabled>Parar esteira</button>
             </div>
-            <p id="avisoControles" class="aviso-controles">Os botões acendem quando a esteira (ESP32) estiver conectada. Para testar sem ela, use o modo demonstração.</p>
+            <p id="avisoControles" class="aviso-controles">Ligue o ESP32 no USB do notebook e clique em "Conectar esteira (USB)".</p>
             <div class="opcoes">
               <label class="opcao"><input type="checkbox" id="pedirConfirmacao" checked> Logi pergunta antes de desviar</label>
               <button id="botaoDemo" class="link-botao">Modo demonstração</button>
@@ -206,7 +210,7 @@
     <section class="secao secao-escura">
       <div class="container">
         <h2 class="titulo-duplo">Planilha de<br><span>Pedidos</span></h2>
-        <p class="texto-intro">Cadastre aqui os pedidos que chegam. Você também pode pedir para o Logi: diga "Logi, cadastrar pedido" e responda as perguntas dele. Tudo fica salvo neste computador e dá para baixar para o Excel.</p>
+        <p class="texto-intro">Cadastre aqui os pedidos que chegam. Você também pode pedir para o Logi: diga "Logi, cadastrar pedido" e responda as perguntas dele. Tudo fica salvo no banco de dados.</p>
 
         <div class="abas" role="tablist">
           <button class="aba ativa" role="tab" aria-selected="true" data-aba="recebimentos">Recebimentos <span id="contaRecebimentos" class="aba-conta">0</span></button>
