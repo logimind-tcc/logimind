@@ -27,7 +27,7 @@ const carteiro = nodemailer.createTransport({
   }
 });
 
-const LINK_PROJETO = "http://localhost:8080/home.html";
+const LINK_PROJETO = "https://logimind-two.vercel.app/frontend/home.html";
 
 function montarEmail(nome) {
   const nomeSeguro = String(nome)
