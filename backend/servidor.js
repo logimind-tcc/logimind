@@ -73,7 +73,8 @@ function montarEmail(nome) {
 }
 
 const app = express();
-const PORTA = 8080;
+const PORTA = process.env.PORT || 8080; // no Render, a porta vem dele; no computador, 8080
+
 
 app.use(cors()); // libera o acesso do site (front-end) ao servidor
 app.use(express.json());
