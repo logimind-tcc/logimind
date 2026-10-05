@@ -2,6 +2,7 @@
    LOGIMIND - SERVIDOR
    Express + MySQL2 + CORS
    Rodar com: npm run dev  (usa o nodemon)
+   Depois abra: http://localhost:8080/painel.html
    ========================================================== */
 
 import "dotenv/config";
@@ -121,7 +122,7 @@ app.post("/criar-cadastro", (requisicao, resposta) => {
       });
     }
 
-        carteiro.sendMail({
+    carteiro.sendMail({
       from: `"Equipe LogiMind" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: `Bem-vindo(a) à LogiMind, ${nome}!`,
@@ -158,6 +159,155 @@ app.delete("/apagar-cadastro/:id", (requisicao, resposta) => {
   });
 });
 
+/* ==========================================================
+   PAINEL DA ESTEIRA - planilha de pedidos e expedicao
+   ========================================================== */
+
+// Confere os dados de um pedido antes de salvar no banco
+function lerPedido(corpo) {
+  const pedido = {
+    codigo: String(corpo.codigo || "").trim().toUpperCase(),
+    tipo: String(corpo.tipo || "Comum"),
+    quantidade: Number(corpo.quantidade),
+    comprimento: Number(corpo.comprimento),
+    largura: Number(corpo.largura),
+    altura: Number(corpo.altura),
+    pesoUnidade: Number(corpo.pesoUnidade),
+    empilhavel: corpo.empilhavel !== false
+  };
+  const numerosOk = [pedido.quantidade, pedido.comprimento, pedido.largura, pedido.altura, pedido.pesoUnidade]
+    .every((n) => Number.isFinite(n) && n > 0);
+  if (!pedido.codigo || pedido.codigo.length > 8 || !numerosOk) return null;
+  return pedido;
+}
+
+/* ---------- LISTAR PEDIDOS ---------- */
+app.get("/api/pedidos", (requisicao, resposta) => {
+  const comando = `SELECT codigo, tipo, quantidade, comprimento, largura, altura,
+                          peso_unidade, empilhavel, situacao
+                   FROM pedidos ORDER BY codigo`;
+  banco.query(comando, (erro, linhas) => {
+    if (erro) {
+      console.log(erro);
+      return resposta.status(500).json({ mensagem: "Nao foi possivel buscar os pedidos" });
+    }
+    resposta.json(linhas);
+  });
+});
+
+/* ---------- CRIAR PEDIDO ---------- */
+app.post("/api/pedidos", (requisicao, resposta) => {
+  const p = lerPedido(requisicao.body);
+  if (!p) return resposta.status(400).json({ mensagem: "Dados do pedido incompletos" });
+
+  const comando = `INSERT INTO pedidos
+    (codigo, tipo, quantidade, comprimento, largura, altura, peso_unidade, empilhavel)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+  const valores = [p.codigo, p.tipo, p.quantidade, p.comprimento, p.largura, p.altura, p.pesoUnidade, p.empilhavel];
+
+  banco.query(comando, valores, (erro) => {
+    if (erro) {
+      console.log(erro);
+      if (erro.code === "ER_DUP_ENTRY") {
+        return resposta.status(409).json({ mensagem: `Ja existe um pedido ${p.codigo}` });
+      }
+      return resposta.status(500).json({ mensagem: "Nao foi possivel salvar o pedido" });
+    }
+    resposta.status(201).json({ mensagem: "Pedido cadastrado" });
+  });
+});
+
+/* ---------- EDITAR PEDIDO ---------- */
+app.put("/api/pedidos/:codigo", (requisicao, resposta) => {
+  const p = lerPedido(requisicao.body);
+  if (!p) return resposta.status(400).json({ mensagem: "Dados do pedido incompletos" });
+
+  const comando = `UPDATE pedidos SET codigo = ?, tipo = ?, quantidade = ?, comprimento = ?,
+    largura = ?, altura = ?, peso_unidade = ?, empilhavel = ? WHERE codigo = ?`;
+  const valores = [p.codigo, p.tipo, p.quantidade, p.comprimento, p.largura, p.altura,
+                   p.pesoUnidade, p.empilhavel, requisicao.params.codigo];
+
+  banco.query(comando, valores, (erro) => {
+    if (erro) {
+      console.log(erro);
+      if (erro.code === "ER_DUP_ENTRY") {
+        return resposta.status(409).json({ mensagem: `Ja existe um pedido ${p.codigo}` });
+      }
+      return resposta.status(500).json({ mensagem: "Nao foi possivel atualizar o pedido" });
+    }
+    resposta.json({ mensagem: "Pedido atualizado" });
+  });
+});
+
+/* ---------- APAGAR PEDIDO ---------- */
+app.delete("/api/pedidos/:codigo", (requisicao, resposta) => {
+  banco.query("DELETE FROM pedidos WHERE codigo = ?", [requisicao.params.codigo], (erro) => {
+    if (erro) {
+      console.log(erro);
+      return resposta.status(500).json({ mensagem: "Nao foi possivel apagar o pedido" });
+    }
+    resposta.json({ mensagem: "Pedido apagado" });
+  });
+});
+
+/* ---------- LISTAR EXPEDICAO ---------- */
+app.get("/api/expedicao", (requisicao, resposta) => {
+  const comando = `SELECT e.data_hora, e.pedido, e.caminhao, e.transportadora, e.frete,
+                          p.tipo, p.quantidade, p.peso_unidade
+                   FROM expedicao e
+                   JOIN pedidos p ON p.codigo = e.pedido
+                   ORDER BY e.id DESC`;
+  banco.query(comando, (erro, linhas) => {
+    if (erro) {
+      console.log(erro);
+      return resposta.status(500).json({ mensagem: "Nao foi possivel buscar a expedicao" });
+    }
+    resposta.json(linhas);
+  });
+});
+
+/* ---------- REGISTRAR SAIDA (o braco separou a caixa) ---------- */
+app.post("/api/expedicao", (requisicao, resposta) => {
+  const { pedido, caminhao, transportadora, frete } = requisicao.body;
+  if (!pedido || !caminhao || !["A", "B", "C"].includes(transportadora)) {
+    return resposta.status(400).json({ mensagem: "Dados da expedicao incompletos" });
+  }
+
+  const comando = `INSERT INTO expedicao (data_hora, pedido, caminhao, transportadora, frete)
+                   VALUES (?, ?, ?, ?, ?)`;
+  banco.query(comando, [new Date(), pedido, caminhao, transportadora, Number(frete) || 0], (erro) => {
+    if (erro) {
+      console.log(erro);
+      return resposta.status(500).json({ mensagem: "Nao foi possivel registrar a saida" });
+    }
+    banco.query("UPDATE pedidos SET situacao = 'enviado' WHERE codigo = ?", [pedido], (erro2) => {
+      if (erro2) console.log(erro2);
+      resposta.status(201).json({ mensagem: "Saida registrada" });
+    });
+  });
+});
+
+/* ---------- LIMPAR EXPEDICAO (comecar a demonstracao do zero) ---------- */
+app.delete("/api/expedicao", (requisicao, resposta) => {
+  banco.query("DELETE FROM expedicao WHERE id > 0", (erro) => {
+    if (erro) {
+      console.log(erro);
+      return resposta.status(500).json({ mensagem: "Nao foi possivel limpar a expedicao" });
+    }
+    banco.query("UPDATE pedidos SET situacao = 'aguardando' WHERE codigo <> ''", (erro2) => {
+      if (erro2) console.log(erro2);
+      resposta.json({ mensagem: "Expedicao limpa" });
+    });
+  });
+});
+
 app.listen(PORTA, () => {
   console.log(`Servidor rodando na porta ${PORTA}`);
+  console.log(`Painel da esteira: http://localhost:${PORTA}/painel.html`);
+
+  // Testa a conexao com o banco assim que o servidor liga
+  banco.query("SELECT COUNT(*) AS total FROM pedidos", (erro, linhas) => {
+    if (erro) console.log("ERRO no banco:", erro.message);
+    else console.log(`Banco OK: ${linhas[0].total} pedido(s) na tabela pedidos.`);
+  });
 });
