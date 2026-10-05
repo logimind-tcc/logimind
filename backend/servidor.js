@@ -9,7 +9,6 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import mysql2 from "mysql2";
-import nodemailer from "nodemailer";
 
 const banco = mysql2.createPool({
   host: process.env.DB_HOST,
@@ -18,14 +17,6 @@ const banco = mysql2.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   ssl: { rejectUnauthorized: false }
-});
-
-const carteiro = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
 });
 
 const LINK_PROJETO = "https://logimind-two.vercel.app/frontend/home.html";
@@ -40,7 +31,7 @@ function montarEmail(nome) {
   <div style="background:#E9EEF6;padding:24px 0;font-family:Arial,Helvetica,sans-serif;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;">
       <tr><td style="background:#0B1530;padding:22px;text-align:center;">
-        <img src="cid:logo" alt="LogiMind" height="44" style="vertical-align:middle;">
+        <img src="https://logimind-two.vercel.app/frontend/pecas/logo.png" alt="LogiMind" height="44" style="vertical-align:middle;">
         <span style="color:#ffffff;font-size:22px;font-weight:bold;letter-spacing:3px;vertical-align:middle;margin-left:10px;">LOGIMIND</span>
       </td></tr>
       <tr><td style="height:4px;background:#1554E0;"></td></tr>
@@ -72,9 +63,32 @@ function montarEmail(nome) {
   </div>`;
 }
 
+/* ---------- ENVIO DE E-MAIL (Brevo) ----------
+   O Render gratis bloqueia o envio de e-mail pelo Gmail (SMTP).
+   Por isso o e-mail sai pela API do Brevo, que funciona pela internet normal (HTTPS).
+   Precisa de duas variaveis no .env e no Render: BREVO_API_KEY e EMAIL_REMETENTE. */
+async function enviarEmail(para, assunto, html) {
+  const resposta = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": process.env.BREVO_API_KEY,
+      "Content-Type": "application/json",
+      accept: "application/json"
+    },
+    body: JSON.stringify({
+      sender: { name: "Equipe LogiMind", email: process.env.EMAIL_REMETENTE },
+      to: [{ email: para }],
+      subject: assunto,
+      htmlContent: html
+    })
+  });
+  if (!resposta.ok) {
+    throw new Error("Brevo respondeu " + resposta.status + ": " + (await resposta.text()));
+  }
+}
+
 const app = express();
 const PORTA = process.env.PORT || 8080; // no Render, a porta vem dele; no computador, 8080
-
 
 app.use(cors()); // libera o acesso do site (front-end) ao servidor
 app.use(express.json());
@@ -123,15 +137,7 @@ app.post("/criar-cadastro", (requisicao, resposta) => {
       });
     }
 
-    carteiro.sendMail({
-      from: `"Equipe LogiMind" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: `Bem-vindo(a) à LogiMind, ${nome}!`,
-      html: montarEmail(nome),
-      attachments: [
-        { filename: "logo.png", path: "frontend/pecas/logo.png", cid: "logo" }
-      ]
-    })
+    enviarEmail(email, `Bem-vindo(a) à LogiMind, ${nome}!`, montarEmail(nome))
       .then(() => console.log("E-mail de boas-vindas enviado para", email))
       .catch((erroEmail) => console.log("Erro ao enviar e-mail:", erroEmail.message));
 
