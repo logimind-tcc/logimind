@@ -1226,13 +1226,13 @@ function lerQuadro(agora) {
     return;
   }
 
-  const escala = Math.min(1, 640 / video.videoWidth);
+  const escala = Math.min(1, 960 / video.videoWidth);
   quadro.width = Math.round(video.videoWidth * escala);
   quadro.height = Math.round(video.videoHeight * escala);
   const ctx = quadro.getContext("2d", { willReadFrequently: true });
   ctx.drawImage(video, 0, 0, quadro.width, quadro.height);
   const imagem = ctx.getImageData(0, 0, quadro.width, quadro.height);
-  const resultado = jsQR(imagem.data, quadro.width, quadro.height, { inversionAttempts: "dontInvert" });
+  const resultado = jsQR(imagem.data, quadro.width, quadro.height, { inversionAttempts: "attemptBoth" });
 
   desenharMoldura(resultado);
   if (!resultado || !resultado.data) return;
