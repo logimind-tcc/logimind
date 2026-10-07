@@ -82,7 +82,7 @@
 }
 
 .area-video {
-  margin-top: 34px;
+  margin-top: 34px auto 0;
   aspect-ratio: 16 / 9;
   width: 100%;
   max-width: 900px;
@@ -124,7 +124,7 @@
 }
 
 .video-real {
-  margin-top: 34px;
+  margin-top: 34px auto 0;
   width: 100%;
   max-width: 900px;
   aspect-ratio: 16 / 9;
@@ -147,4 +147,12 @@
   .trilha-passos {
     grid-template-columns: 1fr;
   }
+}
+
+/* Caixa do vídeo centralizada */
+.area-video,
+.video-real {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 50px;
 }

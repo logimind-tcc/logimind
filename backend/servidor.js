@@ -67,7 +67,7 @@ function montarEmail(nome) {
    O Render gratis bloqueia o envio de e-mail pelo Gmail (SMTP).
    Por isso o e-mail sai pela API do Brevo, que funciona pela internet normal (HTTPS).
    Precisa de duas variaveis no .env e no Render: BREVO_API_KEY e EMAIL_REMETENTE. */
-async function enviarEmail(para, assunto, html) {
+async function enviarEmail(para, assunto, html, responderPara) {
   const resposta = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: {
@@ -79,14 +79,15 @@ async function enviarEmail(para, assunto, html) {
       sender: { name: "Equipe LogiMind", email: process.env.EMAIL_REMETENTE },
       to: [{ email: para }],
       subject: assunto,
-      htmlContent: html
+      htmlContent: html,
+      // Quando a equipe clicar em "Responder", a resposta vai para quem escreveu
+      ...(responderPara ? { replyTo: { email: responderPara } } : {})
     })
   });
   if (!resposta.ok) {
     throw new Error("Brevo respondeu " + resposta.status + ": " + (await resposta.text()));
   }
 }
-
 const app = express();
 const PORTA = process.env.PORT || 8080; // no Render, a porta vem dele; no computador, 8080
 
@@ -306,6 +307,65 @@ app.delete("/api/expedicao", (requisicao, resposta) => {
       resposta.json({ mensagem: "Expedicao limpa" });
     });
   });
+});
+
+/* ==========================================================
+   FORMULARIO "COMO PODEMOS AJUDAR?" (pagina Sobre Nos)
+   Manda a mensagem do visitante para o e-mail da equipe.
+   ========================================================== */
+function limpar(texto) {
+  return String(texto || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\n/g, "<br>");
+}
+
+function montarEmailContato(c) {
+  const linha = (rotulo, valor) =>
+    `<tr><td style="padding:8px 0;color:#5A6680;font-size:13px;width:150px;vertical-align:top;">${rotulo}</td>` +
+    `<td style="padding:8px 0;color:#0B1B3A;font-size:14px;font-weight:bold;">${valor}</td></tr>`;
+  return `
+  <div style="background:#E9EEF6;padding:24px 0;font-family:Arial,Helvetica,sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;">
+      <tr><td style="background:#0B1530;padding:18px 24px;color:#ffffff;font-size:13px;font-weight:bold;letter-spacing:2px;">LOGIMIND · NOVA MENSAGEM DO SITE</td></tr>
+      <tr><td style="height:4px;background:#1554E0;"></td></tr>
+      <tr><td style="padding:24px;">
+        <p style="margin:0 0 4px;color:#1554E0;font-size:12px;font-weight:bold;letter-spacing:2px;">${limpar(c.assunto).toUpperCase()}</p>
+        <p style="margin:0 0 18px;color:#0B1B3A;font-size:22px;font-weight:bold;">${limpar(c.nome)} escreveu pelo site</p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          ${linha("E-mail", limpar(c.email))}
+          ${linha("Telefone", limpar(c.telefone) || "não informado")}
+          ${linha("Conheceu por", limpar(c.origem))}
+          ${linha("Quer novidades", c.novidades ? "sim" : "não")}
+        </table>
+        <div style="margin-top:18px;padding:16px;background:#F1F6FE;border-radius:10px;color:#3A4660;font-size:14px;line-height:1.6;">${limpar(c.mensagem)}</div>
+        <p style="margin:18px 0 0;color:#8390A8;font-size:12px;">Para responder, é só clicar em "Responder": a resposta vai direto para ${limpar(c.email)}.</p>
+      </td></tr>
+    </table>
+  </div>`;
+}
+
+app.post("/contato", async (requisicao, resposta) => {
+  const c = requisicao.body || {};
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(c.email || ""));
+  if (!c.assunto || !c.nome || !emailOk || !c.mensagem) {
+    return resposta.status(400).json({ mensagem: "Preencha assunto, nome, e-mail e mensagem" });
+  }
+
+  try {
+    await enviarEmail(
+      process.env.EMAIL_EQUIPE || process.env.EMAIL_REMETENTE,
+      `[Site LogiMind] ${c.assunto} - ${c.nome}`,
+      montarEmailContato(c),
+      c.email
+    );
+    console.log("Mensagem do site recebida de", c.email);
+    resposta.json({ mensagem: "Mensagem enviada" });
+  } catch (erro) {
+    console.log("Erro ao enviar mensagem do site:", erro.message);
+    resposta.status(500).json({ mensagem: "Nao foi possivel enviar a mensagem agora" });
+  }
 });
 
 app.listen(PORTA, () => {
