@@ -8,6 +8,8 @@
 // (Aiven), escolhe o caminhão e a transportadora e manda o ESP32 mover o braço.
 // Site e ESP32 conversam pelo CABO USB (Web Serial do Chrome/Edge).
 // Site e banco conversam pelo servidor (backend/servidor.js).
+// O painel 3D fica no gemeo3d.js: aqui o painel só avisa o que aconteceu (Gemeo.xxx).
+// O Logi responde perguntas com IA pelo servidor (rota /api/logi, Gemini).
 
 // Configuração
 // Endereço do servidor na internet (Render). Troque pelo endereço do SEU serviço.
@@ -73,6 +75,12 @@ const botaoParar     = document.getElementById("botaoParar");
 const botaoUSB       = document.getElementById("botaoUSB");
 const botaoDemo      = document.getElementById("botaoDemo");
 const avisoLeitor    = document.getElementById("avisoLeitor");
+const alavanca       = document.getElementById("alavanca");
+const textoAlavanca  = document.getElementById("textoAlavanca");
+const Gemeo = window.Gemeo || {};   // painel 3D (se o gemeo3d.js não carregar, nada quebra)
+function gemeo(funcao, ...valores) {
+  try { if (typeof Gemeo[funcao] === "function") Gemeo[funcao](...valores); } catch (e) { console.log("3D:", e); }
+}
 
 let contagem = { A: 0, B: 0, C: 0 };
 let somaFrete = 0;
@@ -94,6 +102,20 @@ const botaoMicrofone   = document.getElementById("botaoMicrofone");
 const textoMicrofone   = document.getElementById("textoMicrofone");
 const botaoVoz         = document.getElementById("botaoVoz");
 const pedirConfirmacao = document.getElementById("pedirConfirmacao");
+const formLogi         = document.getElementById("formLogi");
+const textoLogi        = document.getElementById("textoLogi");
+// Logi flutuante (aparece no canto quando você desce a página)
+const logiFlutuante      = document.getElementById("logiFlutuante");
+const balaoFlutuante     = document.getElementById("balaoFlutuante");
+const legendaFlutuante   = document.getElementById("legendaFlutuante");
+const respostasFlutuante = document.getElementById("respostasFlutuante");
+const formFlutuante      = document.getElementById("formFlutuante");
+const textoFlutuante     = document.getElementById("textoFlutuante");
+const rostoFlutuante     = document.getElementById("rostoFlutuante");
+const bonecoMini = logiBoneco.cloneNode(true);   // cópia do Logi para o canto
+bonecoMini.removeAttribute("id");
+bonecoMini.setAttribute("aria-hidden", "true");
+rostoFlutuante.appendChild(bonecoMini);
 
 let logiAcordado = false;
 let somLigado = true;
@@ -103,11 +125,16 @@ let pendente = null;   // pedido esperando a pessoa dizer "pode mandar"
 
 // Muda a cara do Logi: "falando", "ouvindo", "pensando", "feliz" ou "" (normal)
 function expressao(nome) {
-  logiBoneco.classList.remove("falando", "ouvindo", "pensando", "feliz", "dormindo");
-  if (nome) logiBoneco.classList.add(nome);
+  [logiBoneco, bonecoMini].forEach(b => {
+    b.classList.remove("falando", "ouvindo", "pensando", "feliz", "dormindo");
+    if (nome) b.classList.add(nome);
+  });
 }
 
-function estado(texto) { logiEstado.textContent = texto; }
+function estado(texto) {
+  logiEstado.textContent = texto;
+  logiEstado.classList.toggle("pensando", texto === "Pensando");
+}
 
 function escolherVoz() {
   const vozes = speechSynthesis.getVoices();
@@ -130,8 +157,10 @@ function bipe() {
 function logiDiz(texto, respostas = [], depois = "") {
   ultimaFalaLogi = texto;
   legendaLogi.textContent = texto;
+  legendaFlutuante.textContent = texto;
   avisoLeitor.textContent = texto;
   mostrarRespostas(respostas);
+  abrirBalao(respostas.length ? 0 : 9000);
 
   const terminar = () => {
     expressao(depois || (microfoneLigado ? "ouvindo" : ""));
@@ -160,16 +189,70 @@ function logiDiz(texto, respostas = [], depois = "") {
 
 // Botões de atalho, para quem preferir tocar em vez de falar
 function mostrarRespostas(respostas) {
-  respostasRapidas.innerHTML = "";
-  respostas.forEach((texto, i) => {
-    const botao = document.createElement("button");
-    botao.type = "button";
-    botao.className = "resposta" + (i === 0 && texto !== "Cancelar" ? " resposta-principal" : "");
-    botao.textContent = texto;
-    botao.addEventListener("click", () => voceDisse(texto, true));
-    respostasRapidas.appendChild(botao);
+  [respostasRapidas, respostasFlutuante].forEach(lugar => {
+    lugar.innerHTML = "";
+    respostas.forEach((texto, i) => {
+      const botao = document.createElement("button");
+      botao.type = "button";
+      botao.className = "resposta" + (i === 0 && texto !== "Cancelar" ? " resposta-principal" : "");
+      botao.textContent = texto;
+      botao.addEventListener("click", () => voceDisse(texto, true));
+      lugar.appendChild(botao);
+    });
   });
 }
+
+// ---------- Logi flutuante ----------
+// Quando o Logi grande sai da tela, aparece um Logi pequeno no canto.
+let logiGrandeVisivel = true;
+let fecharBalao = null;
+new IntersectionObserver(([e]) => {
+  logiGrandeVisivel = e.isIntersecting;
+  logiFlutuante.hidden = logiGrandeVisivel;
+  if (logiGrandeVisivel) { balaoFlutuante.hidden = true; balaoFixo = false; }
+}, { threshold: 0.15 }).observe(document.querySelector(".logi"));
+
+// Mostra o balão por alguns segundos (0 = fica aberto até a pessoa fechar)
+function abrirBalao(tempo) {
+  if (logiGrandeVisivel) return;
+  // no celular o balão cobre a tela: só acende um aviso no rosto do Logi
+  if (window.innerWidth < 640 && !balaoFixo) { rostoFlutuante.classList.add("novidade"); return; }
+  balaoFlutuante.hidden = false;
+  rostoFlutuante.setAttribute("aria-expanded", "true");
+  clearTimeout(fecharBalao);
+  if (tempo && !balaoFixo) fecharBalao = setTimeout(() => {
+    if (!balaoFixo && !balaoFlutuante.contains(document.activeElement)) {
+      balaoFlutuante.hidden = true;
+      rostoFlutuante.setAttribute("aria-expanded", "false");
+    }
+  }, tempo);
+}
+let balaoFixo = false;   // a pessoa abriu o balão: ele não fecha sozinho
+rostoFlutuante.addEventListener("click", () => {
+  rostoFlutuante.classList.remove("novidade");
+  if (balaoFlutuante.hidden || !balaoFixo) {
+    if (!legendaFlutuante.textContent) legendaFlutuante.textContent = legendaLogi.textContent;
+    balaoFixo = true;
+    abrirBalao(0);
+    textoFlutuante.focus();
+  } else {
+    balaoFixo = false;
+    balaoFlutuante.hidden = true;
+    rostoFlutuante.setAttribute("aria-expanded", "false");
+  }
+});
+
+// Escrever para o Logi (no cartão grande ou no flutuante)
+function enviarEscrito(evento, campo) {
+  evento.preventDefault();
+  const texto = campo.value.trim();
+  if (!texto) return;
+  campo.value = "";
+  if (!logiAcordado) acordarSemSaudar();
+  voceDisse(texto, true);
+}
+formLogi.addEventListener("submit", e => enviarEscrito(e, textoLogi));
+formFlutuante.addEventListener("submit", e => enviarEscrito(e, textoFlutuante));
 
 // Primeiro toque: o navegador só deixa falar e ouvir depois que a pessoa toca na tela
 function acordarLogi() {
@@ -178,6 +261,15 @@ function acordarLogi() {
   contextoSom = new (window.AudioContext || window.webkitAudioContext)();
   ligarMicrofone();
   logiDiz("Oi, eu sou o Logi! Pode falar comigo. Quando uma caixa passar pela câmera, eu te conto tudo. Se precisar, diga ajuda.");
+}
+
+// Quem escreve primeiro: o Logi acorda para poder falar, sem ligar o microfone
+function acordarSemSaudar() {
+  logiAcordado = true;
+  botaoComecar.hidden = true;
+  try { contextoSom = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+  expressao("");
+  estado("Pronto");
 }
 
 function alternarSom() {
@@ -205,8 +297,29 @@ function contem(texto, palavras) {
   return palavras.some(p => texto.includes(p));
 }
 
+// Parece uma pergunta? (começa com "o que", "como", "por que"...)
+const INICIO_PERGUNTA = /^(o que|oque|que|qual|quais|quem|quando|onde|aonde|como|por que|porque|pq|quanto|quantos|quantas|sera|me explica|explica|me fala|me conta|conta|fala sobre|voce sabe|voce pode me|pode me explicar|e se|para que|pra que)\b/;
+function chamouLogi(t) { return /\b(logi|loji|logy)\b/.test(t); }
+function pareceUmaPergunta(t) {
+  const semNome = t.replace(/\b(logi|loji|logy)\b[,!]?/g, "").replace(/^[\s,!.]+/, "").trim();
+  return { sim: INICIO_PERGUNTA.test(semNome) || /\?$/.test(semNome), palavras: semNome.split(/\s+/).filter(Boolean).length };
+}
+
 // Entende o que a pessoa pediu
 function entender(textoOriginal, tocou = false) {
+  const t = simplificar(textoOriginal);
+
+  // Perguntas de verdade (3 palavras ou mais) vão para a IA.
+  // Pelo microfone, só se a pessoa chamar "Logi" (para não responder conversa de quem está perto).
+  const pergunta = pareceUmaPergunta(t);
+  if (!cadastro && pergunta.sim && pergunta.palavras >= 3 && (tocou || chamouLogi(t))) {
+    return conversarComIA(textoOriginal, () => entenderLocal(textoOriginal, tocou, true));
+  }
+  entenderLocal(textoOriginal, tocou, false);
+}
+
+// Os comandos de sempre, sem IA (rápidos e funcionam sem internet)
+function entenderLocal(textoOriginal, tocou, jaTentouIA) {
   const t = simplificar(textoOriginal);
 
   // Se estiver no meio de um cadastro, a resposta vai para o cadastro
@@ -256,11 +369,67 @@ function entender(textoOriginal, tocou = false) {
     expressao(microfoneLigado ? "ouvindo" : "");
     return;
   }
-  logiDiz("Não entendi. " + textoAjuda(), ["Ajuda", "Como está?"]);
+  const naoEntendi = () => logiDiz("Não entendi. " + textoAjuda(), ["Ajuda", "Como está?"]);
+  if (jaTentouIA) return naoEntendi();
+  conversarComIA(textoOriginal, naoEntendi);   // não era comando: deixa a IA responder
+}
+
+// ---------- Logi com IA (o servidor pergunta ao Gemini) ----------
+let conversaIA = [];      // últimas falas, para a IA lembrar do assunto
+let iaSemChave = false;   // o servidor ainda não tem a GEMINI_API_KEY
+
+// O que está acontecendo no painel agora (a IA usa para responder certo)
+function contextoParaIA() {
+  const total = Object.keys(pedidos).length;
+  const aguardando = Object.values(pedidos).filter(p => p.situacao !== "enviado").length;
+  let texto = `${textoConexao.textContent}. ${resumo()} Planilha: ${total} pedidos, ${aguardando} aguardando. `;
+  texto += ultimoAnalisado
+    ? `Último pedido lido: ${frasePedido(ultimoAnalisado)} ${explicacaoTexto(ultimoAnalisado)} `
+    : "Nenhum pedido lido ainda. ";
+  if (pendente) texto += `Esperando a pessoa confirmar o envio do ${pendente.pedido} para a saída ${pendente.transportadora}.`;
+  return texto;
+}
+
+async function conversarComIA(textoOriginal, seFalhar) {
+  if (iaSemChave) return seFalhar();
+  expressao("pensando");
+  estado("Pensando");
+  try {
+    const resposta = await fetch(API + "/api/logi", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pergunta: textoOriginal, historico: conversaIA.slice(-6), contexto: contextoParaIA() }),
+      signal: AbortSignal.timeout(25000)
+    });
+    if (resposta.status === 503) iaSemChave = true;
+    if (!resposta.ok) throw new Error("servidor " + resposta.status);
+    const { fala, acao } = await resposta.json();
+    if (!fala) throw new Error("resposta vazia");
+    conversaIA.push({ quem: "pessoa", texto: textoOriginal }, { quem: "logi", texto: fala });
+    conversaIA = conversaIA.slice(-12);
+    executarAcaoIA(acao, fala);
+  } catch (erro) {
+    console.log("Logi IA não respondeu:", erro.message);
+    estado("Pronto");
+    seFalhar();
+  }
+}
+
+// A IA pode pedir uma ação do painel; quem executa é o código de sempre
+function executarAcaoIA(acao, fala) {
+  if (acao === "ligar" || acao === "parar") {
+    logiDiz(fala);
+    return enviarComando(acao);   // se a esteira mudar, o Logi confirma em seguida
+  }
+  if (acao === "pode_mandar" && pendente) return confirmarPendente();
+  if (acao === "cancelar" && pendente) return cancelarPendente();
+  if (acao === "cadastrar") return iniciarCadastro();
+  if (acao === "ligar_camera") { ligarCamera(); return; }
+  logiDiz(fala, pendente ? respostasPendente() : [], "feliz");
 }
 
 function textoAjuda() {
-  return "Você pode dizer: cadastrar pedido, pode mandar, cancelar, por quê, repete, ligar esteira, parar esteira, último pedido, frete, planilha ou como está.";
+  return "Você pode dizer: cadastrar pedido, pode mandar, cancelar, por quê, repete, ligar esteira, parar esteira, último pedido, frete, planilha ou como está. E pode me fazer qualquer pergunta sobre o projeto.";
 }
 
 function resumo() {
@@ -743,7 +912,30 @@ function mostrarDesconectado() {
   estadoSensor.textContent = "sem conexão";
   estadoSensor.className = "apagado";
   esteiraAnterior = null;
+  atualizarAlavanca();
 }
+
+// A alavanca mostra o estado real da esteira (o que o ESP32 avisou)
+let esperandoAlavanca = null;
+function atualizarAlavanca() {
+  const semConexao = botaoLigar.disabled && botaoParar.disabled;
+  const rodando = botaoLigar.disabled && !botaoParar.disabled;
+  alavanca.disabled = semConexao;
+  alavanca.setAttribute("aria-pressed", rodando);
+  alavanca.classList.remove("esperando");
+  clearTimeout(esperandoAlavanca);
+  textoAlavanca.textContent = semConexao
+    ? "Conecte a esteira ou use o modo demonstração."
+    : rodando ? "Esteira rodando. Puxe para cima para parar." : "Esteira parada. Puxe para baixo para ligar.";
+}
+alavanca.addEventListener("click", () => {
+  const rodando = alavanca.getAttribute("aria-pressed") === "true";
+  alavanca.setAttribute("aria-pressed", !rodando);   // mexe na hora; o ESP32 confirma depois
+  alavanca.classList.add("esperando");
+  enviarComando(rodando ? "parar" : "ligar");
+  // se o ESP32 não responder em 3 s, a alavanca volta para o estado real
+  esperandoAlavanca = setTimeout(atualizarAlavanca, 3000);
+});
 
 function enviarComando(comando) {
   if (modoDemo) {
@@ -763,6 +955,9 @@ let esteiraAnterior = null;
 let cargaAnterior = false;
 
 function atualizarStatus(dados) {
+  // Ângulos do braço e da calibração: só para o painel 3D
+  if (dados.servos) gemeo("servos", dados.servos);
+  if (dados.config) gemeo("config", dados.config);
   // O ESP32 avisa quando desliga (mensagem {"online": false})
   if (dados.online === false) {
     esteiraOnline = false;
@@ -786,6 +981,8 @@ function atualizarStatus(dados) {
     textoCamera.textContent = dados.braco === "pronto"
       ? "Braço terminou. A esteira volta a andar."
       : `Braço levando a caixa para a saída ${dados.braco}...`;
+    if (dados.braco === "pronto") gemeo("bracoPronto");
+    else gemeo("separar", dados.braco);
   }
   if (dados.esteira !== undefined) {
     const rodando = dados.esteira === "rodando";
@@ -796,14 +993,23 @@ function atualizarStatus(dados) {
     avisoControles.hidden = true;
     // Só fala quando alguém liga/para pelo painel (não a cada carga)
     if (esteiraAnterior !== null && esteiraAnterior !== dados.esteira && !dados.carga && !cargaAnterior) {
-      logiDiz(rodando ? "Liguei a esteira." : "Parei a esteira.");
+      logiDiz(rodando ? "Liguei a esteira. Em três segundos, pode colocar o pallet." : "Parei a esteira.");
+      if (rodando) gemeo("contagem");   // 3, 2, 1... coloque o pallet
     }
     esteiraAnterior = dados.esteira;
+    gemeo("esteira", rodando && !(modoDemo && dados.carga));
+    atualizarAlavanca();
   }
   if (dados.carga !== undefined) {
     estadoSensor.textContent = dados.carga ? "viu uma caixa" : "livre";
     estadoSensor.className = dados.carga ? "texto-destaque" : "";
-    if (dados.carga && !cargaAnterior) logiDiz("Chegou uma caixa. Parei a esteira para ler o código.");
+    if (dados.carga && !cargaAnterior) {
+      logiDiz("Chegou uma caixa. Parei a esteira para ler o código.");
+      gemeo("caixaDetectada");
+    }
+    if (!dados.carga && cargaAnterior) gemeo("sensorLivre");
+    // no modo demonstração a lona do 3D para enquanto a caixa está na frente do sensor
+    if (modoDemo) gemeo("esteira", !dados.carga && estadoEsteira.textContent === "rodando");
     cargaAnterior = dados.carga;
   }
 }
@@ -897,16 +1103,24 @@ function confirmarPendente() {
 
 function cancelarPendente() {
   pendente = null;
+  gemeo("cancelado");
+  if (modoDemo) atualizarStatus({ carga: false });
   if (!modoDemo && usbConectado()) enviarTexto("cancelar");
   textoCamera.textContent = "Desvio cancelado.";
   logiDiz("Tudo bem, não vou desviar essa caixa. A esteira vai voltar a andar sem mexer no braço.");
 }
 
 // Registra o pedido e manda o ESP32 mover o braço
+let separandoDemo = false;
 function concluirPedido(c) {
   registrarCarga(c);
   textoCamera.textContent = `Pedido ${c.pedido} enviado para a saída ${c.transportadora}.`;
-  if (!modoDemo) {
+  if (modoDemo) {
+    // sem ESP32: o 3D simula o braço e depois a esteira volta a andar
+    separandoDemo = true;
+    gemeo("separar", c.transportadora);
+    setTimeout(() => { separandoDemo = false; if (modoDemo) atualizarStatus({ carga: false }); }, 7500);
+  } else {
     if (usbConectado()) enviarTexto("desviar:" + c.transportadora);
     else textoCamera.textContent += " O ESP32 não está conectado, então o braço não foi acionado.";
   }
@@ -934,6 +1148,7 @@ function processarCodigo(textoLido) {
   }
   Object.assign(pedido, escolherTransportadora(pedido.veiculo));
   ultimoAnalisado = pedido;
+  gemeo("codigoLido", pedido);   // holograma com o pedido em cima da caixa
   mostrarVerificacao(pedido);
   ultimoPallet.textContent = codigo;
 
@@ -950,7 +1165,8 @@ function processarCodigo(textoLido) {
 // Câmera
 const video         = document.getElementById("video");
 const camadaQR      = document.getElementById("camadaQR");
-const cameraVazia   = document.getElementById("cameraVazia");
+const webcamMini    = document.getElementById("webcamMini");
+const botaoAumentar = document.getElementById("botaoAumentar");
 const botaoCamera   = document.getElementById("botaoCamera");
 const escolhaCamera = document.getElementById("escolhaCamera");
 const quadro        = document.createElement("canvas");   // cópia da imagem para o leitor de QR
@@ -978,7 +1194,9 @@ async function ligarCamera(idCamera) {
   }
   video.srcObject = fluxoCamera;
   await video.play();
-  cameraVazia.hidden = true;
+  webcamMini.hidden = false;   // a imagem aparece pequena no canto do 3D
+  botaoCamera.textContent = "Câmera ligada";
+  botaoCamera.disabled = true;
   textoCamera.textContent = "Procurando QR Code...";
   logiDiz("Câmera ligada. Pode passar as caixas.");
   await listarCameras();
@@ -1041,22 +1259,24 @@ function desenharMoldura(resultado) {
   const s = camadaQR.width / quadro.width;
   const l = resultado.location;
   const pontos = [l.topLeftCorner, l.topRightCorner, l.bottomRightCorner, l.bottomLeftCorner];
+  const pequeno = camadaQR.width < 360;   // vídeo pequeno no canto: moldura e letra menores
   ctx.strokeStyle = "#4f8cff";
-  ctx.lineWidth = 4;
+  ctx.lineWidth = pequeno ? 2 : 4;
   ctx.beginPath();
   pontos.forEach((p, i) => i === 0 ? ctx.moveTo(p.x * s, p.y * s) : ctx.lineTo(p.x * s, p.y * s));
   ctx.closePath();
   ctx.stroke();
 
   const texto = resultado.data.trim().toUpperCase();
-  ctx.font = "700 16px Inter, Arial, sans-serif";
-  const largura = ctx.measureText(texto).width + 16;
+  const letra = pequeno ? 10 : 16;
+  ctx.font = `700 ${letra}px Inter, Arial, sans-serif`;
+  const largura = ctx.measureText(texto).width + letra;
   const x = l.topLeftCorner.x * s;
-  const y = Math.max(28, l.topLeftCorner.y * s - 8);
+  const y = Math.max(letra * 1.75, l.topLeftCorner.y * s - letra / 2);
   ctx.fillStyle = "#4f8cff";
-  ctx.fillRect(x, y - 24, largura, 26);
+  ctx.fillRect(x, y - letra * 1.5, largura, letra * 1.6);
   ctx.fillStyle = "#fff";
-  ctx.fillText(texto, x + 8, y - 6);
+  ctx.fillText(texto, x + letra / 2, y - letra * 0.4);
 }
 
 // =====================================================================
@@ -1370,6 +1590,7 @@ document.getElementById("botaoLimparExpedicao").addEventListener("click", () => 
   Object.values(pedidos).forEach(p => p.situacao = "aguardando");
   salvarPlanilha();
   enviarAoBanco("DELETE", "/api/expedicao");
+  gemeo("limparBaias");
   mostrarTudo();
 });
 
@@ -1394,13 +1615,19 @@ function alternarDemo() {
     textoConexao.textContent = "Demonstração";
     botaoDemo.textContent = "Parar demonstração";
     logiDiz("Comecei o modo demonstração. Vou fingir que as caixas estão passando.");
+    esteiraAnterior = null;   // a fala "Liguei a esteira" não atropela a de cima
+    cargaAnterior = false;
     atualizarStatus({ esteira: "rodando", carga: false });
+    gemeo("contagem");        // 3, 2, 1... e a primeira caixa chega depois da contagem
     // intervalo longo para dar tempo da voz terminar de falar
     temporizadorDemo = setInterval(simularCarga, 9000);
-    simularCarga();
+    setTimeout(simularCarga, 4200);
   } else {
     clearInterval(temporizadorDemo);
     botaoDemo.textContent = "Modo demonstração";
+    pendente = null;
+    cargaAnterior = false;
+    gemeo("esteira", false);
     logiDiz("Parei o modo demonstração.");
     if (esteiraOnline) {
       luzConexao.className = "luz ligada conectada";
@@ -1415,13 +1642,17 @@ function alternarDemo() {
 }
 
 function simularCarga() {
-  if (estadoEsteira.textContent !== "rodando" || pendente) return;
+  if (estadoEsteira.textContent !== "rodando" || pendente || separandoDemo || cargaAnterior) return;
   atualizarStatus({ carga: true });
   setTimeout(() => {
     const codigos = Object.keys(pedidos);
-    if (!codigos.length) return logiDiz("A planilha de recebimentos está vazia. Cadastre um pedido para eu ter o que separar.");
+    if (!codigos.length) {
+      atualizarStatus({ carga: false });
+      return logiDiz("A planilha de recebimentos está vazia. Cadastre um pedido para eu ter o que separar.");
+    }
     processarCodigo(codigos[indiceExemplo++ % codigos.length]);
-    atualizarStatus({ carga: false });
+    // se não ficou esperando confirmação nem o braço, a esteira já volta a andar
+    if (!pendente && !separandoDemo) { gemeo("cancelado"); atualizarStatus({ carga: false }); }
   }, 2500);
 }
 
@@ -1435,6 +1666,11 @@ botaoVoz.addEventListener("click", alternarSom);
 botaoMicrofone.addEventListener("click", alternarMicrofone);
 botaoCamera.addEventListener("click", () => ligarCamera());
 escolhaCamera.addEventListener("change", () => ligarCamera(escolhaCamera.value));
+// clique no botão da webcam: aumenta a imagem (bom para conferir se o QR está aparecendo)
+botaoAumentar.addEventListener("click", () => {
+  const grande = webcamMini.classList.toggle("grande");
+  botaoAumentar.setAttribute("aria-pressed", grande);
+});
 
 if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = escolherVoz;
 

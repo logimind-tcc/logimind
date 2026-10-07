@@ -11,9 +11,9 @@
   <!-- CSS do site (o mesmo das outras páginas) e o CSS só do painel -->
   <link rel="stylesheet" href="global.css" />
   <link rel="stylesheet" href="painel.css">
-  <!-- MQTT (comunicação com o ESP32) e leitor de QR Code -->
-    <!-- Leitor de QR Code -->
+  <!-- Leitor de QR Code e Three.js (desenha o painel 3D) -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 
 </head>
 <body>
@@ -78,31 +78,87 @@
         <h1 class="titulo-duplo">Painel da<br><span>Esteira</span></h1>
         <p class="texto-intro">A câmera lê o QR Code de cada caixa. O Logi conta para você qual é o pedido, qual caminhão serve e para qual saída a caixa vai. É só conversar com ele.</p>
 
-        <div class="cena">
-          <div class="coluna-camera">
-          <div class="camera">
-            <div class="camera-tela">
+
+        <!-- Gêmeo digital: a esteira em 3D copiando a de verdade -->
+        <div class="gemeo">
+          <div id="gemeoPalco" class="gemeo-palco">
+            <div class="gemeo-topo">
+              <span class="gemeo-tag"><span class="ponto-vivo"></span>Gêmeo digital · ao vivo</span>
+              <span class="gemeo-dica">Arraste para girar · role para aproximar</span>
+            </div>
+            <ul class="hud" aria-label="Situação da esteira em 3D">
+              <li>Esteira <b id="hudEsteira">parada</b></li>
+              <li>Sensor <b id="hudSensor">livre</b></li>
+              <li>Braço <b id="hudBraco">pronto</b></li>
+              <li>QR <b id="hudCodigo">—</b></li>
+            </ul>
+            <div id="gemeoHolos" class="gemeo-holos" aria-hidden="true"></div>
+            <div id="gemeoContagem" class="gemeo-contagem" hidden aria-live="assertive"></div>
+            <!-- A webcam de verdade: fica pequena no canto e continua lendo o QR Code -->
+            <figure id="webcamMini" class="webcam-mini" hidden>
               <video id="video" playsinline muted></video>
               <canvas id="camadaQR" class="camada-qr"></canvas>
-              <div id="cameraVazia" class="camera-vazia">
-                <p>A câmera está desligada.</p>
-                <p class="legenda">Ligue a webcam para o painel ler o QR Code das caixas.</p>
-                <button id="botaoCamera" class="botao botao-azul">Ligar câmera</button>
-              </div>
-            </div>
-            <div class="camera-rodape">
-              <div class="selos">
-                <span class="selo"><span id="luzConexao" class="luz desligada"></span><span id="textoConexao">Desconectado</span></span>
-                <span class="selo">Esteira <strong id="estadoEsteira" class="apagado">sem conexão</strong></span>
-                <span class="selo">Sensor <strong id="estadoSensor" class="apagado">sem conexão</strong></span>
-                <span class="selo">Último código <strong id="ultimoPallet">nenhum</strong></span>
-                <span class="selo">Banco <strong id="estadoBanco" class="apagado">conectando...</strong></span>
-
-              </div>
-              <p id="textoCamera" class="texto-camera">Aguardando a câmera.</p>
-              <select id="escolhaCamera" class="escolha-camera" aria-label="Escolher câmera" hidden></select>
-            </div>
+              <figcaption>Webcam</figcaption>
+              <button id="botaoAumentar" class="webcam-aumentar" type="button" aria-label="Aumentar a imagem da webcam" aria-pressed="false">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+              </button>
+            </figure>
+            <p id="gemeoErro" class="gemeo-erro" hidden>O 3D não abriu neste computador (o navegador está sem WebGL). O resto do painel funciona normal.</p>
           </div>
+
+          <aside class="console">
+            <div class="console-cartao console-controle">
+              <div class="console-selos">
+                <span class="selo"><span id="luzConexao" class="luz desligada"></span><span id="textoConexao">Desconectado</span></span>
+                <span class="selo">Banco <strong id="estadoBanco" class="apagado">conectando...</strong></span>
+              </div>
+
+              <div class="console-alavanca">
+                <button id="alavanca" class="alavanca" type="button" aria-pressed="false" disabled aria-label="Alavanca da esteira">
+                  <span class="alavanca-placa">
+                    <span class="alavanca-rotulo liga">LIGA</span>
+                    <span class="alavanca-trilho"></span>
+                    <span class="alavanca-rotulo desliga">DESL</span>
+                  </span>
+                  <span class="alavanca-braco"><span class="alavanca-punho"></span></span>
+                </button>
+                <div class="alavanca-info">
+                  <p class="console-titulo">Alavanca da esteira</p>
+                  <p id="textoAlavanca" class="console-texto">Conecte a esteira ou use o modo demonstração.</p>
+                </div>
+              </div>
+
+              <div class="console-botoes">
+                <button id="botaoUSB" class="botao botao-azul">Conectar esteira (USB)</button>
+                <button id="botaoCamera" class="botao botao-contorno">Ligar câmera</button>
+              </div>
+              <select id="escolhaCamera" class="escolha-camera" aria-label="Escolher câmera" hidden></select>
+              <p id="textoCamera" class="console-status" aria-live="polite">Ligue a câmera para o painel ler o QR Code das caixas.</p>
+              <p id="avisoControles" class="aviso-controles">Ligue o ESP32 no USB do notebook e clique em "Conectar esteira (USB)".</p>
+
+              <!-- Ligar e parar agora ficam na alavanca; o resto o 3D já mostra -->
+              <div hidden>
+                <button id="botaoLigar" disabled>Ligar esteira</button>
+                <button id="botaoParar" disabled>Parar esteira</button>
+                <strong id="estadoEsteira">sem conexão</strong>
+                <strong id="estadoSensor">sem conexão</strong>
+                <strong id="ultimoPallet">nenhum</strong>
+              </div>
+            </div>
+
+            <div class="console-cartao console-eventos">
+              <p class="console-titulo">O que está acontecendo</p>
+              <ol id="linhaTempo" class="linha-tempo">
+                <li class="evento vazio"><span>Os eventos da esteira aparecem aqui.</span></li>
+              </ol>
+            </div>
+          </aside>
+        </div>
+
+        <div class="cena">
+          <!-- Saídas: quantos pedidos foram para cada transportadora -->
+          <div class="painel-saidas">
+            <p class="console-titulo">Saídas de hoje</p>
             <div class="saidas">
               <div class="transportadora" id="transpA">
                 <span class="letra">A</span>
@@ -120,12 +176,6 @@
 
             <p class="resumo-dia"><span id="totalCargas">Nenhuma caixa separada ainda.</span> <span id="custoTotal"></span></p>
 
-            <div class="controles">
-              <button id="botaoUSB" class="botao botao-azul">Conectar esteira (USB)</button>              
-              <button id="botaoLigar" class="botao botao-verde" disabled>Ligar esteira</button>
-              <button id="botaoParar" class="botao botao-vermelho" disabled>Parar esteira</button>
-            </div>
-            <p id="avisoControles" class="aviso-controles">Ligue o ESP32 no USB do notebook e clique em "Conectar esteira (USB)".</p>
             <div class="opcoes">
               <label class="opcao"><input type="checkbox" id="pedirConfirmacao" checked> Logi pergunta antes de desviar</label>
               <button id="botaoDemo" class="link-botao">Modo demonstração</button>
@@ -178,6 +228,13 @@
             <p id="voceDisseTexto" class="voce-disse"></p>
 
             <div id="respostasRapidas" class="respostas-rapidas"></div>
+
+            <form id="formLogi" class="logi-escrever">
+              <input id="textoLogi" type="text" autocomplete="off" maxlength="300" placeholder="Pergunte qualquer coisa ao Logi" aria-label="Escreva para o Logi">
+              <button type="submit" aria-label="Enviar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+            </form>
 
             <div class="logi-controles">
               <button id="botaoMicrofone" class="botao-microfone" aria-pressed="false">
@@ -276,6 +333,21 @@
 
   </main>
 
+  <!-- Logi que acompanha a página quando você desce -->
+  <div id="logiFlutuante" class="logi-flutuante" hidden>
+    <div id="balaoFlutuante" class="balao-flutuante" hidden>
+      <p id="legendaFlutuante" class="legenda-flutuante"></p>
+      <div id="respostasFlutuante" class="respostas-rapidas"></div>
+      <form id="formFlutuante" class="logi-escrever">
+        <input id="textoFlutuante" type="text" autocomplete="off" maxlength="300" placeholder="Fale com o Logi" aria-label="Escreva para o Logi">
+        <button type="submit" aria-label="Enviar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+    </div>
+    <button id="rostoFlutuante" class="rosto-flutuante" type="button" aria-label="Abrir conversa com o Logi" aria-expanded="false"></button>
+  </div>
+
   <footer class="rodape">
     <p>© 2026 LOGIMIND · Colégio UNASP-SP</p>
   </footer>
@@ -295,6 +367,7 @@
       }, 1500);
     });
   </script>
+  <script src="gemeo3d.js"></script>
   <script src="painel.js"></script>
   <script src="global.js"></script>
 </body>

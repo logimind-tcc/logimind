@@ -88,6 +88,7 @@ async function enviarEmail(para, assunto, html, responderPara) {
     throw new Error("Brevo respondeu " + resposta.status + ": " + (await resposta.text()));
   }
 }
+
 const app = express();
 const PORTA = process.env.PORT || 8080; // no Render, a porta vem dele; no computador, 8080
 
@@ -368,9 +369,106 @@ app.post("/contato", async (requisicao, resposta) => {
   }
 });
 
+// ================== LOGI COM INTELIGENCIA ARTIFICIAL (Gemini) ==================
+// O painel manda a pergunta para ca; o servidor pergunta ao Gemini e devolve a fala.
+// A chave fica so no servidor (.env e Render), nunca no site.
+
+const LOGI_INSTRUCOES = `Você é o Logi, o assistente de voz do projeto LOGIMIND, um TCC do Colégio UNASP-SP.
+O projeto: uma esteira com ESP32, sensor ultrassônico HC-SR04 e motor com driver L298N. Quando o sensor vê a caixa (pallet), a esteira para.
+Uma webcam no painel lê o QR Code da caixa (P01, P02, P03...). O painel busca o pedido no banco de dados MySQL (Aiven),
+calcula o caminhão ideal (VUC, 3/4, Toco, Truck, Carreta, Bitrem, Rodotrem) pelo peso e volume, e escolhe a transportadora
+mais barata (A, B ou C). Depois um braço robótico de MDF com 4 servos SG90 leva a caixa até a saída A, B ou C.
+O site fica na Vercel, o servidor no Render e os e-mails saem pelo Brevo. O painel tem um gêmeo digital 3D que copia a esteira e o braço em tempo real.
+Regras: responda em português do Brasil, como fala (vai ser lida em voz alta): no máximo 3 frases curtas, sem markdown, sem listas, sem emoji.
+Seja simpático e claro, para uma apresentação de feira. Se não souber algo do projeto, diga que não sabe em vez de inventar.
+Se a pessoa pedir uma ação do painel, preencha "acao": "ligar" (ligar a esteira), "parar" (parar a esteira),
+"pode_mandar" (avisar que pode colocar a caixa), "cancelar" (cancelar a carga), "cadastrar" (cadastrar pedido),
+"ligar_camera" (ligar a webcam). Senão, use "nenhuma".
+Responda SOMENTE com JSON assim: {"fala": "...", "acao": "nenhuma"}`;
+
+const ACOES_LOGI = ["nenhuma", "ligar", "parar", "pode_mandar", "cancelar", "cadastrar", "ligar_camera"];
+let perguntasNoMinuto = 0;
+setInterval(() => (perguntasNoMinuto = 0), 60000); // no maximo 20 perguntas por minuto
+
+async function perguntarAoGemini(modelo, corpo, pensarPouco, tempo) {
+  const config = { temperature: 0.6, maxOutputTokens: 1024, responseMimeType: "application/json" };
+  if (pensarPouco) config.thinkingConfig = { thinkingLevel: "low" }; // pensa pouco = responde mais rapido
+  const resposta = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
+      body: JSON.stringify({ ...corpo, generationConfig: config }),
+      signal: AbortSignal.timeout(tempo),
+    }
+  );
+  const dados = await resposta.json().catch(() => ({}));
+  if (!resposta.ok) throw new Error(`Gemini ${resposta.status}: ${dados.error?.message || "erro"}`);
+  const texto = dados.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") || "";
+  if (!texto) throw new Error("Gemini respondeu vazio");
+  return texto;
+}
+
+function lerRespostaLogi(texto) {
+  let fala = texto, acao = "nenhuma";
+  try {
+    const json = JSON.parse(texto.replace(/^```(json)?|```$/g, "").trim());
+    fala = String(json.fala || "");
+    if (ACOES_LOGI.includes(json.acao)) acao = json.acao;
+  } catch {
+    // veio texto solto: usa como fala mesmo
+  }
+  fala = fala.replace(/[*#_`]/g, "").replace(/\s+/g, " ").trim().slice(0, 400);
+  return { fala, acao };
+}
+
+app.post("/api/logi", async (requisicao, resposta) => {
+  const { pergunta, historico, contexto } = requisicao.body || {};
+  if (!process.env.GEMINI_API_KEY) {
+    return resposta.status(503).json({ mensagem: "Falta a GEMINI_API_KEY no servidor" });
+  }
+  if (!pergunta || String(pergunta).length > 500) {
+    return resposta.status(400).json({ mensagem: "Pergunta vazia ou grande demais" });
+  }
+  if (++perguntasNoMinuto > 20) {
+    return resposta.status(429).json({ mensagem: "Muitas perguntas, espere um minuto" });
+  }
+
+  // Conversa: as ultimas falas + a pergunta nova
+  const conversa = (Array.isArray(historico) ? historico : []).slice(-6).map((h) => ({
+    role: h.quem === "logi" ? "model" : "user",
+    parts: [{ text: String(h.texto || "").slice(0, 400) }],
+  }));
+  const situacao = contexto ? `\n(Situação do painel agora: ${String(contexto).slice(0, 400)})` : "";
+  conversa.push({ role: "user", parts: [{ text: String(pergunta) + situacao }] });
+  const corpo = { systemInstruction: { parts: [{ text: LOGI_INSTRUCOES }] }, contents: conversa };
+
+  // Tenta um modelo; se ele nao existir, estiver lotado ou demorar, passa para o proximo.
+  // (O Google troca os nomes dos modelos de tempos em tempos: se mudar, coloque o novo em GEMINI_MODELO.)
+  const modelos = [...new Set([process.env.GEMINI_MODELO, "gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-flash-latest"].filter(Boolean))];
+  const limite = Date.now() + 22000; // o painel espera no maximo uns 25 segundos
+  for (const modelo of modelos) {
+    for (const pensarPouco of [true, false]) {
+      const sobra = limite - Date.now();
+      if (sobra < 2000) break;
+      try {
+        const texto = await perguntarAoGemini(modelo, corpo, pensarPouco, Math.min(15000, sobra));
+        const resultado = lerRespostaLogi(texto);
+        if (resultado.fala) return resposta.json(resultado);
+      } catch (erro) {
+        console.log(`Logi IA (${modelo}):`, erro.message);
+        // so tenta de novo no mesmo modelo se o problema foi a configuracao de "pensar"
+        if (!(pensarPouco && /Gemini 400/.test(erro.message) && /think/i.test(erro.message))) break;
+      }
+    }
+  }
+  resposta.status(502).json({ mensagem: "A IA nao respondeu agora" });
+});
+
 app.listen(PORTA, () => {
   console.log(`Servidor rodando na porta ${PORTA}`);
   console.log(`Painel da esteira: http://localhost:${PORTA}/painel.html`);
+  console.log(process.env.GEMINI_API_KEY ? "Logi com IA: ligado" : "Logi com IA: falta a GEMINI_API_KEY no .env");
 
   // Testa a conexao com o banco assim que o servidor liga
   banco.query("SELECT COUNT(*) AS total FROM pedidos", (erro, linhas) => {
