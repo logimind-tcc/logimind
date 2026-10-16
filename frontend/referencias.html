@@ -21,15 +21,15 @@
   </head>
 
   <body>
-    <!-- ===================== CABEÇALHO ===================== -->
+    <!-- ===================== CABECALHO ===================== -->
     <header class="cabecalho">
       <div class="conteiner cabecalho-interno">
-        <a class="marca" href="home.html" aria-label="LogiMind - página inicial">
-          <img src="pecas/logo.png" alt="" />
+        <a class="marca" href="home.html" aria-label="LogiMind - pagina inicial">
+          <img src="./pecas/logo.png" alt="Logotipo da LogiMind" />
           LOGIMIND
         </a>
 
-        <nav class="navegacao" id="navegacao" aria-label="Navegação principal">
+        <nav class="navegacao" id="navegacao" aria-label="Navegacao principal">
           <ul class="navegacao-lista">
             <li><a href="home.html">Home</a></li>
             <li><a href="instrucao.html">Instruções</a></li>
@@ -38,17 +38,12 @@
             <li><a href="sobrenos.html">Sobre Nós</a></li>
             <li><a href="painel.html">Painel</a></li>
             <li><a href="jogo.html">Jogo</a></li>
-            <li><a class="link-cadastro" href="home.html#cadastro">Cadastre-se</a></li>
+            <li><a class="link-cadastro" href="cadastro.html">Cadastre-se</a></li>
           </ul>
         </nav>
 
         <div class="acoes-cabecalho">
-          <button
-            class="botao-tema"
-            id="botao-tema"
-            type="button"
-            aria-label="Alternar entre tema claro e escuro"
-          >
+          <button class="botao-tema" id="botao-tema" type="button" aria-label="Alternar entre tema claro e escuro">
             <svg class="icone-sol" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <circle cx="12" cy="12" r="4" />
               <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
@@ -58,14 +53,7 @@
             </svg>
           </button>
 
-          <button
-            class="botao-menu"
-            id="botao-menu"
-            type="button"
-            aria-label="Abrir menu"
-            aria-expanded="false"
-            aria-controls="navegacao"
-          >
+          <button class="botao-menu" id="botao-menu" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="navegacao">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <path d="M3 6h18M3 12h18M3 18h18" />
             </svg>
@@ -75,77 +63,122 @@
     </header>
 
     <main>
-      <!-- ===================== LISTA DE REFERÊNCIAS ===================== -->
-      <section class="secao" aria-labelledby="titulo-referencias">
-        <div class="conteiner">
-          <h1 id="titulo-referencias" class="titulo-secao">
-            Nossas <span>referências</span>
-          </h1>
-           <p class="texto-apoio">
-            Estas são as obras que usamos para estudar automação industrial e
-            entender o funcionamento dos sensores, do controle de motores e da
-            leitura de códigos antes de montar o protótipo da esteira. Todas
-            estão disponíveis online, clique no título de cada uma para abrir a
-            fonte completa.
-          </p>
+      <!-- ===================== REFERÊNCIAS ===================== -->
+      <section class="secao acervo" aria-labelledby="titulo-referencias">
+        <div class="conteiner acervo-conteiner">
+          <header class="acervo-topo">
+            <p class="acervo-selo"><span>4 obras</span><span>Automação industrial</span><span>1999 – 2016</span></p>
+            <h1 id="titulo-referencias" class="titulo-secao">
+              Nossas <span>referências</span>
+            </h1>
+            <p class="acervo-intro">
+              O que estudamos sobre sensores, controle de motores e automação antes de montar a esteira.
+              Todas estão online: é só abrir a fonte.
+            </p>
+          </header>
 
-          <div class="painel-referencias">
-            <article class="referencia">
-              <h2 class="referencia-titulo"><a href="https://www.academia.edu/19988593/Automacao_Industrial_Marco_Antonio_Ribeiro" target="_blank" rel="noopener">Ribeiro, Marco Antônio. "Automação industrial." Salvador: [s.n.] (1999).</a></h2>
-              <p class="referencia-texto">
-                O presente trabalho foi escrito como suporte de um curso ministrado a engenheiros e
-                técnicos ligados, de algum modo, à automação industrial.
-              </p>
-            </article>
+          <ol class="acervo-lista">
+            <li class="obra">
+              <span class="obra-num" aria-hidden="true">01</span>
+              <div class="obra-corpo">
+                <p class="obra-meta">Marco Antônio Ribeiro · 1999 · Apostila de curso</p>
+                <h2 class="obra-titulo">Automação industrial</h2>
+                <p class="obra-texto">Escrita como apoio a um curso para engenheiros e técnicos que trabalham com automação industrial.</p>
+                <div class="obra-acoes">
+                  <a class="obra-link" href="https://www.academia.edu/19988593/Automacao_Industrial_Marco_Antonio_Ribeiro" target="_blank" rel="noopener">Abrir fonte <span aria-hidden="true">↗</span></a>
+                  <button class="obra-citar" type="button" data-citacao="RIBEIRO, Marco Antônio. Automação industrial. Salvador: [s.n.], 1999.">Copiar citação ABNT</button>
+                </div>
+              </div>
+            </li>
 
-            <article class="referencia">
-              <h2 class="referencia-titulo"><a href="https://www.ufsm.br/app/uploads/sites/413/2018/12/06_automacao_industrial.pdf" target="_blank" rel="noopener">Roggia, Leandro, and Rodrigo Cardozo Fuentes. "Automação industrial." Santa Maria: E-tec Brasil (2016).</a></h2>
-              <p class="referencia-texto">
-                Faz parte de uma rede nacional de ensino, que por sua vez constituiu uma das ações do
-                Pronatec, Programa Nacional de Acesso ao Ensino Técnico e Emprego.
-              </p>
-            </article>
+            <li class="obra">
+              <span class="obra-num" aria-hidden="true">02</span>
+              <div class="obra-corpo">
+                <p class="obra-meta">Leandro Roggia e Rodrigo Cardozo Fuentes · 2016 · Rede e-Tec Brasil</p>
+                <h2 class="obra-titulo">Automação industrial</h2>
+                <p class="obra-texto">Material da rede nacional de ensino técnico do Pronatec, o Programa Nacional de Acesso ao Ensino Técnico e Emprego.</p>
+                <div class="obra-acoes">
+                  <a class="obra-link" href="https://www.ufsm.br/app/uploads/sites/413/2018/12/06_automacao_industrial.pdf" target="_blank" rel="noopener">Abrir fonte <span aria-hidden="true">↗</span></a>
+                  <button class="obra-citar" type="button" data-citacao="ROGGIA, Leandro; FUENTES, Rodrigo Cardozo. Automação industrial. Santa Maria: Rede e-Tec Brasil, 2016.">Copiar citação ABNT</button>
+                </div>
+              </div>
+            </li>
 
-            <article class="referencia">
-              <h2 class="referencia-titulo"><a href="https://www.editorabarauna.com.br/livro/engenharia-tecnologia/automacao-industrial/" target="_blank" rel="noopener">Rosário, João Maurício. Automação industrial. Editora Baraúna, 2009.</a></h2>
-              <p class="referencia-texto">
-                Este livro didático é fruto de um trabalho de aproximadamente 20 anos nas áreas de
-                Mecatrônica, de Automação Industrial, de Robótica e de Controle e Instrumentação.
-              </p>
-            </article>
+            <li class="obra">
+              <span class="obra-num" aria-hidden="true">03</span>
+              <div class="obra-corpo">
+                <p class="obra-meta">João Maurício Rosário · 2009 · Editora Baraúna</p>
+                <h2 class="obra-titulo">Automação industrial</h2>
+                <p class="obra-texto">Livro didático que reúne cerca de 20 anos de trabalho em mecatrônica, automação, robótica e controle.</p>
+                <div class="obra-acoes">
+                  <a class="obra-link" href="https://www.editorabarauna.com.br/livro/engenharia-tecnologia/automacao-industrial/" target="_blank" rel="noopener">Abrir fonte <span aria-hidden="true">↗</span></a>
+                  <button class="obra-citar" type="button" data-citacao="ROSÁRIO, João Maurício. Automação industrial. São Paulo: Baraúna, 2009.">Copiar citação ABNT</button>
+                </div>
+              </div>
+            </li>
 
-            <article class="referencia">
-              <h2 class="referencia-titulo"><a href="https://books.google.com.br/books/about/Automa%C3%A7%C3%A3o_Industrial_na_Pr%C3%A1tica_S%C3%A9ri.html?id=X5XzCQAAQBAJ" target="_blank" rel="noopener">Lamb, Frank. Automação industrial na prática - série Tekne. AMGH Editora, 2015.</a></h2>
-              <p class="referencia-texto">
-                Este livro reúne os conceitos e a terminologia da automação e das máquinas industriais,
-                servindo tanto como introdução quanto como referência para o profissional experiente.
-              </p>
-            </article>
-          </div>
+            <li class="obra">
+              <span class="obra-num" aria-hidden="true">04</span>
+              <div class="obra-corpo">
+                <p class="obra-meta">Frank Lamb · 2015 · AMGH Editora, série Tekne</p>
+                <h2 class="obra-titulo">Automação industrial na prática</h2>
+                <p class="obra-texto">Conceitos e termos da automação e das máquinas industriais, como introdução e como consulta para quem já trabalha na área.</p>
+                <div class="obra-acoes">
+                  <a class="obra-link" href="https://books.google.com.br/books/about/Automa%C3%A7%C3%A3o_Industrial_na_Pr%C3%A1tica_S%C3%A9ri.html?id=X5XzCQAAQBAJ" target="_blank" rel="noopener">Abrir fonte <span aria-hidden="true">↗</span></a>
+                  <button class="obra-citar" type="button" data-citacao="LAMB, Frank. Automação industrial na prática. Porto Alegre: AMGH, 2015. (Série Tekne).">Copiar citação ABNT</button>
+                </div>
+              </div>
+            </li>
+          </ol>
         </div>
       </section>
     </main>
 
-    <!-- ===================== RODAPÉ ===================== -->
+    <!-- ===================== RODAPE ===================== -->
     <footer class="rodape">
       <div class="conteiner rodape-interno">
         <a class="marca" href="home.html">
-          <img src="pecas/logo.png" alt="LOGIMIND" />
+          <img src="./pecas/logo.png" alt="LOGIMIND">
           LOGIMIND
         </a>
         <ul class="rodape-lista">
           <li><a href="produto.html">Comprar</a></li>
           <li><a href="sobrenos.html">Quem somos</a></li>
           <li><a href="instrucao.html">Guia</a></li>
-          <li><a href="sobrenos.html#contato">Contato e suporte</a></li>
+          <li><a href="painel.html">Painel</a></li>
+          <li><a class="link-cadastro" href="home.html#cadastro">Cadastre-se</a></li>
         </ul>
         <p class="rodape-direitos">
-          LogiMind - Projeto acadêmico de automação logística. Todos os direitos
+          LogiMind - Projeto academico de automacao logistica. Todos os direitos
           reservados.
         </p>
       </div>
     </footer>
 
     <script src="global.js"></script>
+    <script>
+      // Botão "Copiar citação ABNT": copia o texto pronto para colar no trabalho
+      document.querySelectorAll(".obra-citar").forEach((botao) => {
+        botao.addEventListener("click", async () => {
+          const texto = botao.dataset.citacao;
+          try {
+            await navigator.clipboard.writeText(texto);
+          } catch {
+            const campo = document.createElement("input");
+            campo.value = texto;
+            document.body.appendChild(campo);
+            campo.select();
+            document.execCommand("copy");
+            campo.remove();
+          }
+          botao.textContent = "Citação copiada ✓";
+          botao.classList.add("copiado");
+          setTimeout(() => {
+            botao.textContent = "Copiar citação ABNT";
+            botao.classList.remove("copiado");
+          }, 2000);
+        });
+      });
+    </script>
   </body>
 </html>

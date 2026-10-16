@@ -215,34 +215,69 @@
             A mesma caixa, separada de dois jeitos.
           </p>
 
-          <div class="comparar" id="comparar">
-            <div class="comparar-abas" role="tablist" aria-label="Escolha o jeito de separar">
-              <button type="button" role="tab" aria-selected="false" data-lado="manual">Separação manual</button>
-              <button type="button" role="tab" aria-selected="true" data-lado="logimind">Com a LogiMind</button>
+          <div class="trajeto" id="comparar" data-modo="manual">
+            <div class="trajeto-topo">
+              <div class="trajeto-chave" role="group" aria-label="Escolha o jeito de separar">
+                <button type="button" data-modo="manual" aria-pressed="true">Manual</button>
+                <button type="button" data-modo="logimind" aria-pressed="false">Com a LogiMind</button>
+              </div>
+              <p class="trajeto-placar" aria-live="polite">
+                <span class="trajeto-led" aria-hidden="true"></span>
+                <span class="so-manual">4 decisões nas mãos de uma pessoa</span>
+                <span class="so-logimind">4 decisões automáticas e registradas</span>
+              </p>
             </div>
 
-            <div class="comparar-grade" data-mostrar="logimind">
-              <div class="comparar-cabeca manual">
-                <span class="comparar-rotulo">Separação manual</span>
-                <span class="comparar-resumo">4 decisões nas mãos de uma pessoa</span>
-              </div>
-              <div class="comparar-cabeca logimind">
-                <span class="comparar-rotulo">Com a LogiMind</span>
-                <span class="comparar-resumo">4 decisões automáticas e registradas</span>
-              </div>
-
-              <p class="comparar-item manual"><b>Identificar</b>O conferente lê a etiqueta e digita o código. Um número trocado manda a carga errada.</p>
-              <p class="comparar-item logimind"><b>Identificar</b>A webcam lê o QR Code em instantes. O código vem exatamente como foi cadastrado.</p>
-
-              <p class="comparar-item manual"><b>Consultar</b>Procura o pedido em papel ou planilha para saber medidas e peso.</p>
-              <p class="comparar-item logimind"><b>Consultar</b>O pedido vem do banco de dados, com medidas, peso e quantidade.</p>
-
-              <p class="comparar-item manual"><b>Escolher o caminhão</b>Escolhe “no olho”. Caminhão grande demais custa mais; pequeno demais não fecha a porta.</p>
-              <p class="comparar-item logimind"><b>Escolher o caminhão</b>Testa altura, largura, peso e quantidade em cada caminhão e pega o menor que serve, com o frete mais barato.</p>
-
-              <p class="comparar-item manual"><b>Registrar</b>Anota à mão para onde a carga foi, quando lembra.</p>
-              <p class="comparar-item logimind"><b>Registrar</b>Cada saída é gravada na expedição, com data, caminhão, transportadora e frete.</p>
-            </div>
+            <ol class="trajeto-etapas">
+              <li class="etapa" style="--i:0">
+                <span class="etapa-no" aria-hidden="true">01</span>
+                <h3 class="etapa-nome">Identificar</h3>
+                <div class="etapa-troca">
+                  <p class="so-manual">O conferente lê a etiqueta e digita o código. Um número trocado manda a carga errada.</p>
+                  <p class="so-logimind">A webcam lê o QR Code em instantes. O código vem exatamente como foi cadastrado.</p>
+                </div>
+                <div class="etapa-troca">
+                  <code class="etapa-leitura so-manual">digitado à mão</code>
+                  <code class="etapa-leitura so-logimind">qr lido → P02</code>
+                </div>
+              </li>
+              <li class="etapa" style="--i:1">
+                <span class="etapa-no" aria-hidden="true">02</span>
+                <h3 class="etapa-nome">Consultar</h3>
+                <div class="etapa-troca">
+                  <p class="so-manual">Procura o pedido em papel ou planilha para saber medidas e peso.</p>
+                  <p class="so-logimind">O pedido vem do banco de dados, com medidas, peso e quantidade.</p>
+                </div>
+                <div class="etapa-troca">
+                  <code class="etapa-leitura so-manual">papel ou planilha solta</code>
+                  <code class="etapa-leitura so-logimind">banco → 2 vol. · 400 kg</code>
+                </div>
+              </li>
+              <li class="etapa" style="--i:2">
+                <span class="etapa-no" aria-hidden="true">03</span>
+                <h3 class="etapa-nome">Escolher o caminhão</h3>
+                <div class="etapa-troca">
+                  <p class="so-manual">Escolhe “no olho”. Caminhão grande demais custa mais; pequeno demais não fecha a porta.</p>
+                  <p class="so-logimind">Testa altura, largura, peso e quantidade em cada caminhão e pega o menor que serve, com o frete mais barato.</p>
+                </div>
+                <div class="etapa-troca">
+                  <code class="etapa-leitura so-manual">estimativa no olho</code>
+                  <code class="etapa-leitura so-logimind">3/4 ✓ · transportadora B</code>
+                </div>
+              </li>
+              <li class="etapa" style="--i:3">
+                <span class="etapa-no" aria-hidden="true">04</span>
+                <h3 class="etapa-nome">Registrar</h3>
+                <div class="etapa-troca">
+                  <p class="so-manual">Anota à mão para onde a carga foi, quando lembra.</p>
+                  <p class="so-logimind">Cada saída é gravada na expedição, com data, caminhão, transportadora e frete.</p>
+                </div>
+                <div class="etapa-troca">
+                  <code class="etapa-leitura so-manual">anotado à mão</code>
+                  <code class="etapa-leitura so-logimind">expedição gravada · R$ 410</code>
+                </div>
+              </li>
+            </ol>
           </div>
 
           <figure class="manifesto">

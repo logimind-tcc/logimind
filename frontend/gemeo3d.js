@@ -51,7 +51,7 @@ function registrar(texto, tipo = "") {
   const vazio = linhaTempo.querySelector(".vazio");
   if (vazio) vazio.remove();
   linhaTempo.prepend(li);
-  while (linhaTempo.children.length > 7) linhaTempo.lastChild.remove();
+  while (linhaTempo.children.length > 40) linhaTempo.lastChild.remove();
 }
 function hudTexto(chave, texto, classe = "") {
   const el = hud[chave];
@@ -277,12 +277,12 @@ pulso.add(pontaGarra);
 // Ângulos: calibração (o ESP32 manda a dele; estes são os padrões)
 // =====================================================================
 const CAL = {
-  esteira: 90, saidas: [40, 130, 170],
-  alto: [70, 110], pegar: [115, 75], soltar: [105, 85],
-  garra: [40, 100]
+  esteira: 0, saidas: [100, 110, 130],
+  alto: [90, 100], pegar: [90, 60], soltar: [90, 60],
+  garra: [40, 90]
 };
-const servoAtual = [90, 70, 110, 40];
-const servoAlvo = [90, 70, 110, 40];
+const servoAtual = [0, 90, 100, 40];
+const servoAlvo = [0, 90, 100, 40];
 
 function aplicarServos() {
   const [b, o, c, g] = servoAtual;
@@ -357,6 +357,19 @@ function posicionarCaminhoes() {
     c.grupo.position.copy(BASE_BRACO).addScaledVector(d, 28);
     c.grupo.rotation.y = Math.atan2(-d.z, d.x);  // cabine apontando para fora
   });
+  enquadrar();
+}
+
+// Centraliza a câmera no meio de tudo (esteira, braço e caminhões),
+// porque a posição dos caminhões muda com os ângulos de cada maquete
+function enquadrar() {
+  const pontos = [new THREE.Vector3(ESTEIRA.inicio, 0, 0), new THREE.Vector3(ESTEIRA.fim, 0, 0), BASE_BRACO.clone()];
+  Object.values(caminhoes).forEach((c) => pontos.push(c.grupo.position.clone()));
+  const min = new THREE.Vector3(Infinity, 0, Infinity), max = new THREE.Vector3(-Infinity, 0, -Infinity);
+  pontos.forEach((p) => { min.min(p); max.max(p); });
+  alvoCamera.set((min.x + max.x) / 2, 8, (min.z + max.z) / 2);
+  orbita.distancia = THREE.MathUtils.clamp(Math.max(max.x - min.x, max.z - min.z) * 1.7, 120, 190);
+  posicionarCamera();
 }
 posicionarCaminhoes();
 

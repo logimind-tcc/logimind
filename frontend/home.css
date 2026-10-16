@@ -179,91 +179,265 @@
   transition: left 0.9s cubic-bezier(0.6, 0, 0.3, 1);
 }
 
-/* ---------- POR QUE: MANUAL x LOGIMIND ---------- */
-.comparar {
+/* ---------- POR QUE: MANUAL x LOGIMIND (o mesmo trajeto, dois modos) ---------- */
+.trajeto {
+  --t-fundo: #0a1324;
+  --t-linha: rgba(148, 170, 214, 0.22);
+  --t-texto: #a5b2c9;
+  --t-titulo: #eef3ff;
+  --t-azul: #3b82ff;
+  --t-brilho: #7fb2ff;
+  --t-ambar: #f2b453;
+  position: relative;
   margin-top: 40px;
-}
-
-.comparar-abas {
-  display: none;
-}
-
-.comparar-grade {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 0;
-  border: 1px solid var(--cor-borda);
+  padding: 26px 30px 34px;
+  border: 1px solid #1d2a45;
   border-radius: var(--raio-grande);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 28px 28px,
+    radial-gradient(120% 90% at 100% 0%, rgba(19, 88, 227, 0.18), transparent 60%),
+    var(--t-fundo);
+  color: var(--t-texto);
   overflow: hidden;
-  background-color: var(--cor-cartao);
+  isolation: isolate;
 }
 
-.comparar-cabeca {
+/* barra de cima: chave de modo + placar */
+.trajeto-topo {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 22px 26px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+  margin-bottom: 38px;
 }
 
-.comparar-cabeca.manual {
-  background-color: var(--cor-fundo-alt);
+.trajeto-chave {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  border: 1px solid #24345a;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
 }
 
-.comparar-cabeca.logimind {
-  background-color: var(--cor-azul);
+.trajeto-chave::before {   /* o "cursor" que desliza entre os dois modos */
+  content: "";
+  position: absolute;
+  inset: 4px auto 4px 4px;
+  width: calc(50% - 4px);
+  border-radius: 999px;
+  background: #24314c;
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.25, 1), background-color 0.45s ease, box-shadow 0.45s ease;
+}
+
+.trajeto[data-modo="logimind"] .trajeto-chave::before {
+  transform: translateX(100%);
+  background: var(--cor-azul);
+  box-shadow: 0 0 22px rgba(59, 130, 255, 0.55);
+}
+
+.trajeto-chave button {
+  position: relative;
+  z-index: 1;
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  font-family: var(--fonte-titulo);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #8592ad;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.trajeto-chave button[aria-pressed="true"] {
   color: #fff;
 }
 
-.comparar-rotulo {
-  font-family: var(--fonte-titulo);
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--cor-titulo);
+.trajeto-chave button:focus-visible {
+  outline: 2px solid var(--t-brilho);
+  outline-offset: 2px;
+  border-radius: 999px;
 }
 
-.comparar-cabeca.logimind .comparar-rotulo {
-  color: #fff;
-}
-
-.comparar-resumo {
-  font-size: 0.88rem;
-}
-
-.comparar-cabeca.logimind .comparar-resumo {
-  color: #dbe6ff;
-}
-
-.comparar-item {
-  padding: 18px 26px;
-  border-top: 1px solid var(--cor-borda);
-  font-size: 0.95rem;
-}
-
-.comparar-item b {
-  display: block;
-  margin-bottom: 4px;
-  font-family: var(--fonte-titulo);
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
+.trajeto-placar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.comparar-item.manual {
-  background-color: var(--cor-fundo-alt);
-  color: var(--cor-texto);
+.trajeto-led {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--t-ambar);
+  box-shadow: 0 0 10px var(--t-ambar);
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
 }
 
-.comparar-item.manual b {
-  color: var(--cor-texto);
+.trajeto[data-modo="logimind"] .trajeto-led {
+  background: #34d399;
+  box-shadow: 0 0 10px #34d399;
 }
 
-.comparar-item.logimind {
-  color: var(--cor-titulo);
-  border-left: 1px solid var(--cor-borda);
+/* o que muda entre os modos */
+.trajeto:not([data-modo="logimind"]) .so-logimind,
+.trajeto[data-modo="logimind"] .so-manual {
+  display: none;
 }
 
-.comparar-item.logimind b {
-  color: var(--cor-azul);
+/* as 4 estações ligadas por uma trilha */
+.trajeto-etapas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.etapa {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-right: 26px;
+}
+
+.etapa-troca:last-child {
+  margin-top: auto;   /* as leituras ficam alinhadas embaixo */
+}
+
+.etapa:not(:last-child)::after {   /* trilho até a próxima estação */
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 21px;
+  left: 22px;
+  width: 100%;
+  height: 2px;
+  background:
+    linear-gradient(90deg, var(--t-brilho), var(--t-azul)) left / 0% 100% no-repeat,
+    repeating-linear-gradient(90deg, var(--t-linha) 0 6px, transparent 6px 12px);
+  transition: background-size 0.6s ease;
+}
+
+.trajeto[data-modo="logimind"] .etapa:not(:last-child)::after {
+  background:
+    linear-gradient(90deg, var(--t-brilho), var(--t-azul)) left / 0% 100% no-repeat,
+    linear-gradient(rgba(59, 130, 255, 0.25), rgba(59, 130, 255, 0.25));
+}
+
+.trajeto[data-modo="logimind"] .etapa.feita:not(:last-child)::after {
+  background-size: 100% 100%, auto;
+  box-shadow: 0 0 12px rgba(59, 130, 255, 0.6);
+}
+
+.etapa-no {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 20px;
+  border: 1.5px dashed #4a5876;
+  border-radius: 50%;
+  background: var(--t-fundo);
+  font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #7d8aa5;
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.trajeto[data-modo="logimind"] .etapa-no {
+  border: 1.5px solid #2c4f97;
+  color: #8fb0ea;
+}
+
+.trajeto[data-modo="logimind"] .etapa.feita .etapa-no,
+.trajeto[data-modo="logimind"] .etapa.ativa .etapa-no {
+  border-color: var(--t-brilho);
+  background: var(--cor-azul);
+  color: #fff;
+}
+
+.trajeto[data-modo="logimind"] .etapa.ativa .etapa-no {
+  animation: trajeto-pulso 1.4s ease-out infinite;
+}
+
+@keyframes trajeto-pulso {
+  0%   { box-shadow: 0 0 0 0 rgba(59, 130, 255, 0.7); }
+  100% { box-shadow: 0 0 0 14px rgba(59, 130, 255, 0); }
+}
+
+.etapa-nome {
+  margin: 0 0 8px;
+  font-family: var(--fonte-titulo);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--t-titulo);
+}
+
+.etapa-troca p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  animation: trajeto-entra 0.45s ease both;
+  animation-delay: calc(var(--i) * 70ms);
+}
+
+.trajeto[data-modo="logimind"] .etapa-troca p {
+  color: #c9d5ec;
+}
+
+.etapa-leitura {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--t-ambar);
+  background: rgba(242, 180, 83, 0.1);
+  border: 1px solid rgba(242, 180, 83, 0.22);
+  animation: trajeto-entra 0.45s ease both;
+  animation-delay: calc(var(--i) * 70ms + 120ms);
+}
+
+.etapa-leitura.so-logimind {
+  color: var(--t-brilho);
+  background: rgba(59, 130, 255, 0.12);
+  border-color: rgba(59, 130, 255, 0.3);
+}
+
+.etapa-leitura.so-logimind::before {
+  content: "› ";
+  color: #34d399;
+}
+
+@keyframes trajeto-entra {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trajeto *,
+  .trajeto *::before,
+  .trajeto *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 /* frase do objetivo */
@@ -480,47 +654,6 @@
     grid-template-columns: 1fr;
   }
 
-  /* no celular, um lado da comparação de cada vez */
-  .comparar-abas {
-    display: flex;
-    gap: 6px;
-    padding: 5px;
-    margin-bottom: 14px;
-    border: 1px solid var(--cor-borda);
-    border-radius: 999px;
-    background-color: var(--cor-fundo-alt);
-  }
-
-  .comparar-abas button {
-    flex: 1;
-    padding: 10px 12px;
-    border: none;
-    border-radius: 999px;
-    background: none;
-    font-family: var(--fonte-titulo);
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: var(--cor-texto);
-    cursor: pointer;
-  }
-
-  .comparar-abas button[aria-selected="true"] {
-    background-color: var(--cor-azul);
-    color: #fff;
-  }
-
-  .comparar-grade {
-    grid-template-columns: 1fr;
-  }
-
-  .comparar-grade[data-mostrar="logimind"] .manual,
-  .comparar-grade[data-mostrar="manual"] .logimind {
-    display: none;
-  }
-
-  .comparar-item.logimind {
-    border-left: none;
-  }
 }
 
 @media (max-width: 560px) {
@@ -557,5 +690,72 @@
   .hero-botoes .botao {
     flex: 1 1 100%;
     justify-content: center;
+  }
+}
+
+/* trajeto no celular: as estações ficam uma embaixo da outra */
+@media (max-width: 760px) {
+  .trajeto {
+    padding: 20px 18px 24px;
+  }
+
+  .trajeto-topo {
+    margin-bottom: 28px;
+  }
+
+  .trajeto-chave {
+    width: 100%;
+  }
+
+  .trajeto-chave button {
+    padding: 10px 8px;
+  }
+
+  .trajeto-etapas {
+    grid-template-columns: 1fr;
+  }
+
+  .etapa {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    column-gap: 16px;
+    padding: 0 0 26px;
+  }
+
+  .etapa-no {
+    grid-row: span 3;
+    margin: 0;
+  }
+
+  .etapa-nome {
+    margin-top: 10px;
+  }
+
+  .etapa-troca p {
+    min-height: 0;
+  }
+
+  .etapa-leitura {
+    margin-top: 10px;
+  }
+
+  .etapa:not(:last-child)::after {
+    top: 22px;
+    left: 21px;
+    width: 2px;
+    height: 100%;
+    background:
+      linear-gradient(180deg, var(--t-brilho), var(--t-azul)) top / 100% 0% no-repeat,
+      repeating-linear-gradient(180deg, var(--t-linha) 0 6px, transparent 6px 12px);
+  }
+
+  .trajeto[data-modo="logimind"] .etapa:not(:last-child)::after {
+    background:
+      linear-gradient(180deg, var(--t-brilho), var(--t-azul)) top / 100% 0% no-repeat,
+      linear-gradient(rgba(59, 130, 255, 0.25), rgba(59, 130, 255, 0.25));
+  }
+
+  .trajeto[data-modo="logimind"] .etapa.feita:not(:last-child)::after {
+    background-size: 100% 100%, auto;
   }
 }

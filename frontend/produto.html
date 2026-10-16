@@ -24,12 +24,12 @@
     <!-- ===================== CABECALHO ===================== -->
     <header class="cabecalho">
       <div class="conteiner cabecalho-interno">
-        <a class="marca" href="home.html" aria-label="LogiMind - pagina inicial">
+        <a class="marca" href="home.html" aria-label="LogiMind - página inicial">
           <img src="./pecas/logo.png" alt="Logotipo da LogiMind" />
           LOGIMIND
         </a>
 
-        <nav class="navegacao" id="navegacao" aria-label="Navegacao principal">
+        <nav class="navegacao" id="navegacao" aria-label="Navegação principal">
           <ul class="navegacao-lista">
             <li><a href="home.html">Home</a></li>
             <li><a href="instrucao.html">Instruções</a></li>
@@ -38,7 +38,7 @@
             <li><a href="sobrenos.html">Sobre Nós</a></li>
             <li><a href="painel.html">Painel</a></li>
             <li><a href="jogo.html" title="Disponível na Etapa 2">Jogo</a></li>
-            <li><a class="link-cadastro" href="cadastro.html">Cadastre-se</a></li>
+            <li><a class="link-cadastro" href="home.html#cadastro">Cadastre-se</a></li>
           </ul>
         </nav>
 
@@ -63,71 +63,104 @@
     </header>
 
     <main>
-      <!-- ===================== RESUMO DO PRODUTO ===================== -->
+      <!-- ===================== MAPA DO PROTÓTIPO + CUPOM ===================== -->
       <section class="secao" aria-labelledby="titulo-componentes">
         <div class="conteiner">
           <h1 id="titulo-componentes" class="titulo-secao">
             Componentes <span>utilizados</span>
           </h1>
           <p class="texto-apoio">
-            Conheca toda a lista de itens utilizados no desenvolvimento do
-            projeto, com o valor de cada peça e o custo final do prototipo.
+            Toque em um número do protótipo para ver a peça, o que ela faz e quanto custou.
           </p>
 
-          <article class="painel-resumo">
-            <div class="resumo-imagem">
-              <svg viewBox="0 0 420 260" role="img" aria-label="Prototipo da esteira inteligente LogiMind">
+          <div class="vitrine">
+            <figure class="mapa">
+              <div class="mapa-desenho">
+              <svg viewBox="0 40 640 310" role="img" aria-label="Desenho do protótipo LogiMind com as peças numeradas">
                 <defs>
-                  <linearGradient id="gradProduto" x1="0" y1="0" x2="1" y2="1">
+                  <linearGradient id="gradMapa" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0%" stop-color="#1358e3" />
                     <stop offset="100%" stop-color="#0b3fa8" />
                   </linearGradient>
                 </defs>
-                <rect x="30" y="150" width="360" height="28" rx="14" fill="url(#gradProduto)" />
-                <g stroke="url(#gradProduto)" stroke-width="8" stroke-linecap="round">
-                  <path d="M70 178 L58 230" />
-                  <path d="M350 178 L362 230" />
-                  <path d="M50 232 L370 232" />
+                <!-- base de MDF -->
+                <rect x="14" y="318" width="612" height="22" rx="4" class="mapa-base" />
+                <!-- prateleira da eletrônica -->
+                <rect x="40" y="276" width="300" height="8" rx="3" class="mapa-traco" />
+                <!-- esteira -->
+                <rect x="40" y="206" width="370" height="24" rx="12" fill="url(#gradMapa)" />
+                <g class="mapa-rolos"><circle cx="58" cy="218" r="7" /><circle cx="392" cy="218" r="7" /></g>
+                <g stroke="url(#gradMapa)" stroke-width="7" stroke-linecap="round">
+                  <path d="M70 230 L64 318" /><path d="M380 230 L386 318" />
                 </g>
-                <rect x="150" y="96" width="80" height="54" rx="4" fill="#d9a86a" />
-                <rect x="150" y="96" width="80" height="13" rx="3" fill="#c1904f" />
-                <rect x="176" y="116" width="26" height="26" fill="#fff" />
-                <g fill="#0b1220">
-                  <rect x="180" y="120" width="6" height="6" />
-                  <rect x="191" y="120" width="6" height="6" />
-                  <rect x="180" y="131" width="6" height="6" />
+                <!-- motor -->
+                <g data-peca="motor" class="mapa-peca"><rect x="20" y="226" width="34" height="24" rx="5" class="mapa-escuro" /><rect x="50" y="234" width="10" height="8" rx="2" class="mapa-escuro" /></g>
+                <!-- sensor HC-SR04 -->
+                <g data-peca="hcsr04" class="mapa-peca"><rect x="226" y="178" width="40" height="18" rx="3" fill="#2563eb" /><circle cx="237" cy="187" r="6" class="mapa-claro" /><circle cx="255" cy="187" r="6" class="mapa-claro" /><rect x="244" y="196" width="4" height="12" class="mapa-escuro" /></g>
+                <!-- caixa com QR -->
+                <g class="mapa-caixa"><rect x="296" y="160" width="58" height="46" rx="3" fill="#d9a86a" /><rect x="296" y="160" width="58" height="11" rx="2" fill="#c1904f" /><rect x="315" y="177" width="20" height="20" fill="#fff" /><rect x="318" y="180" width="5" height="5" fill="#0b1220" /><rect x="327" y="180" width="5" height="5" fill="#0b1220" /><rect x="318" y="189" width="5" height="5" fill="#0b1220" /></g>
+                <!-- webcam no poste -->
+                <g data-peca="webcam" class="mapa-peca"><path d="M372 206 V70 H330" class="mapa-poste" /><rect x="308" y="62" width="34" height="22" rx="5" class="mapa-escuro" /><circle cx="325" cy="73" r="6" fill="#3b9eff" /><path d="M325 84 L300 158 H350 Z" class="mapa-feixe" /></g>
+                <!-- braço (4 servos) -->
+                <g data-peca="braco" class="mapa-peca"><ellipse cx="478" cy="300" rx="34" ry="10" class="mapa-escuro" /><rect x="468" y="262" width="20" height="38" rx="4" fill="#c99a62" /><path d="M478 266 L506 186 L438 168" class="mapa-braco" /><path d="M438 168 l-12 -10 M438 168 l-14 6" class="mapa-garra" /></g>
+                <g data-peca="braco" class="mapa-peca"><rect x="466" y="250" width="24" height="14" rx="3" fill="#2f6fd6" /><rect x="496" y="180" width="20" height="14" rx="3" fill="#2f6fd6" /><rect x="430" y="160" width="16" height="12" rx="3" fill="#2f6fd6" /></g>
+                <!-- saídas A B C -->
+                <g class="mapa-saidas">
+                  <rect x="548" y="196" width="56" height="26" rx="4" class="saida-a" /><text x="576" y="214">A</text>
+                  <rect x="560" y="240" width="56" height="26" rx="4" class="saida-b" /><text x="588" y="258">B</text>
+                  <rect x="548" y="284" width="56" height="26" rx="4" class="saida-c" /><text x="576" y="302">C</text>
                 </g>
-                <g stroke="url(#gradProduto)" stroke-width="10" fill="none" stroke-linecap="round">
-                  <path d="M320 40 L320 92" />
-                  <path d="M320 92 L252 120" />
-                </g>
-                <rect x="298" y="20" width="44" height="24" rx="5" fill="url(#gradProduto)" />
+                <!-- eletrônica -->
+                <g data-peca="fonte" class="mapa-peca"><rect x="48" y="246" width="50" height="30" rx="4" class="mapa-escuro" /><rect x="54" y="252" width="22" height="8" rx="2" fill="#7CFC9A" opacity=".7" /></g>
+                <g data-peca="esp32" class="mapa-peca"><rect x="110" y="250" width="44" height="26" rx="3" fill="#20242b" /><rect x="124" y="254" width="16" height="12" rx="1" fill="#b8bec6" /></g>
+                <g data-peca="l298n" class="mapa-peca"><rect x="166" y="244" width="46" height="32" rx="3" fill="#c0392b" /><rect x="180" y="250" width="20" height="18" fill="#1f2328" /></g>
+                <g data-peca="stepdown" class="mapa-peca"><rect x="224" y="254" width="40" height="22" rx="3" fill="#1f5fbf" /><rect x="248" y="258" width="10" height="7" rx="1" fill="#93c5fd" /></g>
+                <g data-peca="protoboard" class="mapa-peca"><rect x="276" y="258" width="58" height="18" rx="2" fill="#f8f8f4" stroke="#c9c9bd" /><path d="M282 263 H328 M282 271 H328" stroke="#9ca3af" stroke-dasharray="2 3" /></g>
+                <g data-peca="jumpers" class="mapa-peca" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M290 260 C 292 236, 318 230, 330 246 S 348 262, 352 248" stroke="#f97316" /><path d="M300 260 C 304 242, 324 240, 334 252 S 352 266, 358 254" stroke="#16a34a" /></g>
               </svg>
-            </div>
+              <div class="marcadores" id="marcadores"></div>
+              </div>
+              <figcaption>Desenho simplificado do protótipo. Os números são as peças da lista.</figcaption>
+            </figure>
 
-            <aside class="resumo-valor" aria-label="Custo do projeto">
-              <p class="etiqueta">Valor total</p>
-              <p class="valor-total" id="valor-total">R$ 0,00</p>
-              <p class="valor-observacao">
-                <span id="quantidade-itens">0</span> itens no prototipo montado.
-              </p>
-              <a class="botao botao-primario" href="home.html#cadastro">Solicitar orcamento</a>
+            <!-- Cupom com o custo (preenchido pelo produto.js) -->
+            <aside class="cupom" aria-label="Custo do protótipo">
+              <div class="cupom-papel">
+                <p class="cupom-titulo">LOGIMIND</p>
+                <p class="cupom-sub">PROTÓTIPO · ESTEIRA INTELIGENTE</p>
+                <p class="cupom-linha-tracejada"></p>
+                <ol class="cupom-itens" id="cupom-itens"></ol>
+                <p class="cupom-linha-tracejada"></p>
+                <p class="cupom-total"><span>TOTAL</span><strong id="valor-total">R$ 0,00</strong></p>
+                <p class="cupom-obs" id="cupom-obs"></p>
+                <p class="cupom-rodape"><span id="quantidade-itens">0</span> itens · Colégio UNASP-SP</p>
+              </div>
+              <a class="botao botao-primario cupom-botao" href="home.html#cadastro">Solicitar orçamento</a>
             </aside>
-          </article>
+          </div>
         </div>
       </section>
 
       <!-- ===================== LISTA DE COMPONENTES ===================== -->
       <section class="secao secao-alternada" aria-labelledby="titulo-lista">
         <div class="conteiner">
-          <h2 id="titulo-lista" class="titulo-secao">Lista de <span>peças</span></h2>
-          <p class="texto-apoio">
-            Ordene por nome ou por preço para comparar o peso de cada item no
-            custo final.
-          </p>
+          <div class="lista-topo">
+            <div>
+              <h2 id="titulo-lista" class="titulo-secao">Lista de <span>peças</span></h2>
+              <p class="texto-apoio">O que cada peça faz no protótipo.</p>
+            </div>
+            <label class="campo-ordenacao">
+              Ordenar por
+              <select id="seletor-ordem">
+                <option value="mapa">número do desenho</option>
+                <option value="maior">maior preço</option>
+                <option value="menor">menor preço</option>
+                <option value="nome">nome</option>
+              </select>
+            </label>
+          </div>
 
-          <!-- Os cartoes sao gerados por produto.js a partir da lista de componentes.
-               As fotos das pecas entram nas miniaturas pelo fotos-pecas.js -->
+          <!-- Os cartões são gerados pelo produto.js a partir da lista de componentes -->
           <div class="grade-componentes" id="grade-componentes"></div>
         </div>
       </section>
@@ -148,7 +181,7 @@
           <li><a class="link-cadastro" href="home.html#cadastro">Cadastre-se</a></li>
         </ul>
         <p class="rodape-direitos"> 
-          LogiMind - Projeto academico de automacao logistica. Todos os direitos
+          LogiMind - Projeto acadêmico de automação logística. Todos os direitos
           reservados.
         </p>
       </div>
@@ -156,6 +189,5 @@
 
     <script src="global.js"></script>
     <script src="produto.js"></script>
-    <script src="fotos-pecas.js"></script>
   </body>
 </html>

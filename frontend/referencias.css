@@ -3,85 +3,222 @@
    Depende de global.css (variáveis, cabeçalho, rodapé)
    ========================================================== */
 
-/* ---------- PAINEL COM AS OBRAS ---------- */
-/* max-width + margin auto deixam a caixa centralizada e mais estreita */
-.painel-referencias {
-  max-width: 760px;
-  margin-top: 40px;
+/* ---------- TOPO CENTRALIZADO ---------- */
+.acervo-conteiner {
+  max-width: 860px;
+}
+
+.acervo-topo {
+  text-align: center;
+}
+
+.acervo-topo .titulo-secao {
   margin-left: auto;
   margin-right: auto;
-  position: relative;
-  left: 20px;
-  background-color: #d9d9d9;
-  border-radius: var(--raio-grande);
-  padding: 30px 36px;
-  display: grid;
-  gap: 20px;
 }
 
-/* no tema escuro a caixa acompanha o fundo do site */
-[data-tema="escuro"] .painel-referencias {
-  background-color: var(--cor-fundo-alt);
+.acervo-selo {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 0 18px;
+  font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.referencia {
-  text-align: center;
-  padding-bottom: 18px;
-  border-bottom: 1px solid rgba(11, 18, 32, 0.15);
-}
-
-[data-tema="escuro"] .referencia {
-  border-bottom-color: var(--cor-borda);
-}
-
-.referencia:last-child {
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-.referencia-titulo {
-  font-size: 1.02rem;
-  font-weight: 700;
-  line-height: 1.45;
-  margin-bottom: 8px;
-}
-
-.referencia-titulo a {
-  color: var(--cor-titulo);
-  border-bottom: 2px solid transparent;
-  transition: color var(--transicao), border-color var(--transicao);
-}
-
-.referencia-titulo a:hover {
-  color: var(--cor-azul);
-  border-color: var(--cor-azul);
-}
-
-.referencia-texto {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  max-width: 620px;
-  margin: 0 auto;
-  color: #38405a;
-}
-
-[data-tema="escuro"] .referencia-texto {
+.acervo-selo span {
+  padding: 5px 11px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
   color: var(--cor-texto);
 }
 
+.acervo-selo span:first-child {
+  border-color: var(--cor-azul);
+  color: var(--cor-azul);
+}
+
+.acervo-intro {
+  max-width: 560px;
+  margin: 14px auto 0;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--cor-texto);
+}
+
+/* ---------- LISTA DAS OBRAS (linhas, sem cartões) ---------- */
+.acervo-lista {
+  margin: 56px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.obra {
+  position: relative;
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 22px;
+  padding: 30px 8px 30px 0;
+  border-bottom: 1px solid var(--cor-borda);
+  transition: background-color var(--transicao);
+}
+
+/* linha azul que "lê" a obra ao passar o mouse */
+.obra::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cor-azul), var(--cor-azul-claro));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.6, 0, 0.2, 1);
+}
+
+.obra:hover::before,
+.obra:focus-within::before {
+  transform: scaleX(1);
+}
+
+.obra-num {
+  font-family: var(--fonte-titulo);
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1.2px var(--cor-borda);
+  transition: color var(--transicao), -webkit-text-stroke-color var(--transicao);
+}
+
+.obra:hover .obra-num,
+.obra:focus-within .obra-num {
+  color: var(--cor-azul);
+  -webkit-text-stroke-color: var(--cor-azul);
+}
+
+.obra-meta {
+  margin: 0 0 6px;
+  font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.02em;
+  color: var(--cor-azul);
+}
+
+.obra-titulo {
+  margin: 0 0 8px;
+  font-family: var(--fonte-titulo);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--cor-titulo);
+}
+
+.obra-texto {
+  margin: 0;
+  max-width: 600px;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--cor-texto);
+}
+
+.obra-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin-top: 16px;
+}
+
+.obra-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background-color: var(--cor-azul);
+  color: #fff;
+  font-family: var(--fonte-titulo);
+  font-size: 0.86rem;
+  font-weight: 700;
+  transition: background-color var(--transicao), transform var(--transicao);
+}
+
+.obra-link:hover {
+  background-color: var(--cor-azul-forte);
+  transform: translateY(-1px);
+}
+
+.obra-link span {
+  transition: transform var(--transicao);
+}
+
+.obra-link:hover span {
+  transform: translate(2px, -2px);
+}
+
+.obra-citar {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--fonte-texto);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--cor-texto);
+  text-decoration: underline;
+  text-decoration-color: var(--cor-borda);
+  text-underline-offset: 4px;
+  cursor: pointer;
+  transition: color var(--transicao), text-decoration-color var(--transicao);
+}
+
+.obra-citar:hover {
+  color: var(--cor-titulo);
+  text-decoration-color: var(--cor-azul);
+}
+
+.obra-citar.copiado {
+  color: #16a34a;
+  text-decoration-color: #16a34a;
+}
+
+.obra-link:focus-visible,
+.obra-citar:focus-visible {
+  outline: 2px solid var(--cor-azul);
+  outline-offset: 3px;
+}
+
 /* ---------- RESPONSIVO ---------- */
-@media (max-width: 700px) {
-  .painel-referencias {
-    padding: 22px;
-    gap: 18px;
-    left: 0;
+@media (max-width: 640px) {
+  .acervo-lista {
+    margin-top: 40px;
   }
 
-  .referencia-titulo {
-    font-size: 0.96rem;
+  .obra {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 24px 0;
   }
 
-  .referencia-texto {
-    font-size: 0.89rem;
+  .obra-num {
+    font-size: 1.9rem;
+  }
+
+  .obra-titulo {
+    font-size: 1.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .obra::before,
+  .obra-link,
+  .obra-link span {
+    transition: none;
   }
 }

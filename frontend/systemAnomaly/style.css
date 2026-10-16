@@ -1,0 +1,67 @@
+/* Layout: one dark arcade cabinet — the canvas is the whole page, a thin terminal strip below it. */
+:root {
+  --void: #07080c;
+  --panel: #0d1117;
+  --line: #233040;
+  --phosphor: #6cff9a;
+  --alarm: #ff3c46;
+  --dim: #8c93a3;
+  --display: "Silkscreen", "Courier New", monospace;
+  --term: "VT323", "Courier New", monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--void);
+  color: var(--dim);
+  font-family: var(--term);
+  font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding-inline: 16px;
+  padding-block: 12px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+#tela {
+  display: block;
+  width: 100%;
+  max-width: min(1280px, calc((100vh - 110px) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  height: auto;
+  background: #000;
+  border: 1px solid var(--line);
+  image-rendering: pixelated;
+  touch-action: none;
+  cursor: crosshair;
+  outline: none;
+}
+#tela:focus-visible { border-color: var(--phosphor); }
+.barra {
+  width: 100%;
+  max-width: min(1280px, calc((100vh - 110px) * 16 / 9));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  min-width: 0;
+}
+.dica { margin: 0; line-height: 1.1; min-width: 0; }
+.dica b { color: var(--phosphor); font-weight: 400; }
+.botoes { display: flex; gap: 8px; }
+.barra button {
+  font-family: var(--display);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--phosphor);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.barra button:hover { border-color: var(--phosphor); }
+.barra button:focus-visible { outline: 2px solid var(--phosphor); outline-offset: 2px; }

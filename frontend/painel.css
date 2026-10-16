@@ -622,3 +622,83 @@ body {
   .webcam-mini.grande { width: calc(100% - 24px); }
   .painel-saidas .transportadora { padding: 10px; }
 }
+
+/* =====================================================================
+   EVENTOS COM ALTURA FIXA + LOGI COM CONVERSA PRÓPRIA
+   ===================================================================== */
+/* a coluna do lado do 3D tem a mesma altura dele: os eventos rolam por dentro */
+.gemeo { align-items: start; }
+.console { height: clamp(420px, 46vw, 560px); grid-template-rows: auto minmax(0, 1fr); }
+.console-eventos { overflow: hidden; }
+.linha-tempo { flex: 1; min-height: 0; overflow-y: auto; padding-right: 4px; scrollbar-width: thin; }
+
+/* embaixo do 3D: saídas (estreito) + Logi (largo) */
+.cena { grid-template-columns: 280px minmax(0, 1fr); align-items: stretch; }
+
+.logi {
+  display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px;
+  align-items: stretch; text-align: left; padding: 22px;
+}
+.logi-lado { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
+.logi-lado .logi-palco { max-width: 180px; }
+.logi-lado .logi-nome { margin-top: 6px; }
+.logi-lado .logi-controles { flex-direction: column; align-items: stretch; width: 100%; gap: 8px; margin-top: auto; padding-top: 16px; }
+.logi-lado .botao-microfone,
+.logi-lado .botao-voz { justify-content: center; padding: 8px 12px; font-size: 0.8rem; }
+
+.logi-chat { display: flex; flex-direction: column; min-width: 0; padding-left: 24px; border-left: 1px solid var(--cor-borda); }
+.logi-chat-topo {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--cor-borda);
+}
+.logi-dica { font-size: 0.8rem; color: var(--cor-suave); }
+
+/* as mensagens, como num aplicativo de conversa */
+.conversa {
+  list-style: none; margin: 0; padding: 14px 6px 14px 0;
+  display: flex; flex-direction: column; gap: 10px;
+  height: 300px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+}
+.msg { max-width: 86%; padding: 10px 14px; border-radius: 16px; font-size: 0.93rem; line-height: 1.5; animation: msgEntra 0.3s ease; overflow-wrap: anywhere; }
+.msg-logi { align-self: flex-start; background: var(--cor-cartao-2); border: 1px solid var(--cor-borda); border-bottom-left-radius: 4px; color: var(--cor-texto); }
+.msg-voce { align-self: flex-end; background: var(--cor-azul); color: #fff; border-bottom-right-radius: 4px; }
+.msg-pensando { color: var(--cor-suave); letter-spacing: 0.2em; }
+.msg-pensando::after { content: "..."; animation: piscaAlerta 0.8s steps(2) infinite; }
+@keyframes msgEntra { from { opacity: 0; transform: translateY(6px); } }
+
+.logi-chat .respostas-rapidas { justify-content: flex-start; margin-top: 10px; }
+.sugestoes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.respostas-rapidas:not(:empty) + .sugestoes { display: none; }
+.sugestao {
+  border: 1px dashed var(--cor-borda); background: none; color: var(--cor-suave); cursor: pointer;
+  border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 0.8rem;
+}
+.sugestao:hover { color: var(--cor-azul); border: 1px solid var(--cor-azul); }
+
+.logi-chat .logi-escrever { max-width: none; margin-top: 12px; }
+.logi-escrever { padding-left: 5px; align-items: center; }
+.logi-escrever .botao-falar {
+  background: var(--cor-cartao); color: var(--cor-texto); border: 1px solid var(--cor-borda);
+}
+.logi-escrever .botao-falar:hover { border-color: var(--cor-azul); color: var(--cor-azul); }
+.logi-escrever .botao-falar.ouvindo {
+  background: var(--cor-vermelho); border-color: var(--cor-vermelho); color: #fff;
+  animation: pulsoMic 1.2s ease-out infinite;
+}
+@keyframes pulsoMic { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); } 100% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .msg, .logi-escrever .botao-falar.ouvindo { animation: none; }
+}
+@media (max-width: 960px) {
+  .console { height: auto; }
+  .linha-tempo { max-height: 240px; }
+  .cena { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  .logi { grid-template-columns: 1fr; padding: 18px; }
+  .logi-lado .logi-palco { max-width: 140px; }
+  .logi-lado .logi-controles { flex-direction: row; justify-content: center; }
+  .logi-chat { padding-left: 0; border-left: 0; border-top: 1px solid var(--cor-borda); padding-top: 14px; }
+  .conversa { height: 280px; }
+}

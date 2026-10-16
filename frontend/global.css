@@ -439,3 +439,95 @@ button:focus-visible {
 .cabecalho .marca {
   margin-right: 40px;
 }
+/* ---------- 11. CABEÇALHO NO CELULAR E NO TABLET ---------- */
+/* o cabeçalho acompanha a rolagem e serve de base para o menu que abre embaixo dele */
+.cabecalho {
+  position: sticky;
+  top: 0;
+}
+
+@media (max-width: 900px) {
+  .cabecalho .conteiner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .cabecalho-interno {
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .cabecalho .marca {
+    margin: 0;
+  }
+
+  .navegacao {
+    box-shadow: 0 24px 30px -24px rgba(11, 18, 32, 0.45);
+  }
+
+  .navegacao.aberta {
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
+  }
+
+  .navegacao-lista {
+    padding: 6px 16px 20px;
+  }
+
+  .navegacao-lista li {
+    width: 100%;
+  }
+
+  /* cada item ocupa a linha inteira: o texto fica entre as linhas, não em cima delas */
+  .navegacao-lista a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 15px 4px;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--cor-borda);
+  }
+
+  .navegacao-lista a::after {
+    content: "›";
+    font-size: 1.3rem;
+    line-height: 1;
+    color: var(--cor-texto);
+    opacity: 0.55;
+  }
+
+  .navegacao-lista a.ativo {
+    padding-left: 16px;
+    border-bottom-color: var(--cor-borda);
+  }
+
+  .navegacao-lista a.ativo::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 4px;
+    height: 20px;
+    margin-top: -10px;
+    border-radius: 4px;
+    background-color: var(--cor-azul);
+  }
+
+  .navegacao-lista .link-cadastro {
+    justify-content: center;
+    margin-top: 18px;
+    padding: 13px 20px;
+    border-bottom: none;
+  }
+
+  .navegacao-lista .link-cadastro::after {
+    content: none;
+  }
+}
+
+/* links com # não ficam escondidos atrás do cabeçalho fixo */
+html {
+  scroll-padding-top: 84px;
+}

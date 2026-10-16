@@ -109,11 +109,59 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  const grade = document.querySelector(".comparar-grade");
-  document.querySelectorAll(".comparar-abas button").forEach((botao) => {
-    botao.addEventListener("click", () => {
-      grade.dataset.mostrar = botao.dataset.lado;
-      document.querySelectorAll(".comparar-abas button").forEach((b) => b.setAttribute("aria-selected", b === botao));
-    });
-  });
+  // "Por que a LogiMind": o mesmo trajeto em dois modos
+  const trajeto = document.getElementById("comparar");
+  if (trajeto) {
+    const etapas = [...trajeto.querySelectorAll(".etapa")];
+    const botoes = [...trajeto.querySelectorAll(".trajeto-chave button")];
+    const semMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let passo = 0;
+    let relogio = null;
+    let mexeu = false;
+
+    // acende as estações uma a uma, como a caixa passando pelo sistema
+    const acender = () => {
+      etapas.forEach((e, i) => {
+        e.classList.toggle("feita", i < passo);
+        e.classList.toggle("ativa", i === passo);
+      });
+      passo = passo >= etapas.length ? 0 : passo + 1;
+    };
+
+    const mudarModo = (modo) => {
+      trajeto.dataset.modo = modo;
+      botoes.forEach((b) => b.setAttribute("aria-pressed", b.dataset.modo === modo));
+      // reinicia a animação de entrada dos textos
+      trajeto.querySelectorAll(".etapa-troca > *").forEach((el) => {
+        el.style.animation = "none";
+        void el.offsetWidth;
+        el.style.animation = "";
+      });
+      clearInterval(relogio);
+      etapas.forEach((e) => e.classList.remove("feita", "ativa"));
+      if (modo !== "logimind") return;
+      if (semMovimento) {
+        etapas.forEach((e) => e.classList.add("feita"));
+        return;
+      }
+      passo = 0;
+      acender();
+      relogio = setInterval(acender, 1100);
+    };
+
+    botoes.forEach((b) => b.addEventListener("click", () => {
+      mexeu = true;
+      mudarModo(b.dataset.modo);
+    }));
+
+    // a primeira vez que a seção aparece, mostra o manual e vira sozinha para a LogiMind
+    if ("IntersectionObserver" in window) {
+      const olho = new IntersectionObserver((itens) => {
+        if (!itens[0].isIntersecting) return;
+        olho.disconnect();
+        setTimeout(() => { if (!mexeu) mudarModo("logimind"); }, 2400);
+      }, { threshold: 0.5 });
+      olho.observe(trajeto);
+    }
+  }
 });

@@ -104,6 +104,7 @@ const botaoVoz         = document.getElementById("botaoVoz");
 const pedirConfirmacao = document.getElementById("pedirConfirmacao");
 const formLogi         = document.getElementById("formLogi");
 const textoLogi        = document.getElementById("textoLogi");
+const conversaLogi     = document.getElementById("conversaLogi");
 // Logi flutuante (aparece no canto quando você desce a página)
 const logiFlutuante      = document.getElementById("logiFlutuante");
 const balaoFlutuante     = document.getElementById("balaoFlutuante");
@@ -153,9 +154,31 @@ function bipe() {
   oscilador.stop(contextoSom.currentTime + 0.15);
 }
 
+// Põe uma mensagem na conversa (quem: "logi" ou "voce")
+function adicionarMensagem(quem, texto) {
+  conversaLogi.querySelector(".msg-pensando")?.remove();
+  const li = document.createElement("li");
+  li.className = "msg msg-" + quem;
+  li.textContent = texto;
+  conversaLogi.appendChild(li);
+  while (conversaLogi.children.length > 40) conversaLogi.firstElementChild.remove();
+  conversaLogi.scrollTop = conversaLogi.scrollHeight;
+}
+
+// Os três pontinhos enquanto o Logi pensa
+function mostrarPensando() {
+  if (conversaLogi.querySelector(".msg-pensando")) return;
+  const li = document.createElement("li");
+  li.className = "msg msg-logi msg-pensando";
+  li.setAttribute("aria-label", "Logi está pensando");
+  conversaLogi.appendChild(li);
+  conversaLogi.scrollTop = conversaLogi.scrollHeight;
+}
+
 // O Logi fala (e mostra botões de resposta, se tiver)
 function logiDiz(texto, respostas = [], depois = "") {
   ultimaFalaLogi = texto;
+  adicionarMensagem("logi", texto);
   legendaLogi.textContent = texto;
   legendaFlutuante.textContent = texto;
   avisoLeitor.textContent = texto;
@@ -283,6 +306,7 @@ function alternarSom() {
 function voceDisse(texto, tocou = false) {
   if (!texto.trim()) return;
   voceDisseTexto.textContent = `Você: "${texto}"`;
+  adicionarMensagem("voce", texto);
   mostrarRespostas([]);
   expressao("pensando");
   entender(texto, tocou);
@@ -297,17 +321,116 @@ function contem(texto, palavras) {
   return palavras.some(p => texto.includes(p));
 }
 
+// ---------- Perguntas prontas sobre o projeto ----------
+// Respostas certas e rápidas para as perguntas da apresentação (funcionam sem internet).
+// Cada pergunta tem grupos de palavras: a frase precisa ter pelo menos uma palavra de CADA grupo.
+// Para mudar uma resposta, é só mudar o texto. Para criar uma, copie um bloco { ... }.
+const PERGUNTAS_PRONTAS = [
+  { grupos: [["como funciona", "como e que funciona", "explica", "explique", "me conta", "resume", "passo a passo"],
+             ["projeto", "logimind", "logi mind", "esteira", "sistema", "trabalho", "tcc", "tudo", "isso"]],
+    resposta: "Funciona assim: a caixa anda na esteira até o sensor ultrassônico perceber que ela chegou, e a esteira para. " +
+              "A webcam lê o QR Code da caixa e eu busco o pedido no banco de dados. Depois eu testo os caminhões, do menor para o maior, " +
+              "fico com o menor em que a carga cabe e escolho a transportadora mais barata. Por fim, o braço robótico leva a caixa até a saída A, B ou C, e tudo fica registrado." },
+  { grupos: [["o que e", "oque e", "que e a", "que e o", "o que voces fizeram", "apresenta", "do que se trata", "sobre o que e"],
+             ["logimind", "logi mind", "projeto", "esteira", "trabalho", "tcc"]],
+    resposta: "A LogiMind é uma esteira inteligente para centros de distribuição. Ela identifica cada caixa pelo QR Code, " +
+              "calcula qual caminhão e qual transportadora saem mais em conta e separa a caixa com um braço robótico, sem ninguém precisar escolher no olho." },
+  { grupos: [["problema", "resolve", "objetivo", "finalidade", "pra que serve", "para que serve", "por que voces", "porque voces", "por que criaram", "por que fizeram"]],
+    resposta: "Em muitas empresas, a pessoa escolhe o caminhão e a transportadora no olho. Caminhão grande demais é frete pago por espaço vazio, " +
+              "e pequeno demais faz a carga voltar. A LogiMind faz essa conta em segundos, sem erro de digitação, e registra cada saída." },
+  { grupos: [["diferencial", "diferente", "melhor que", "vantage", "inovador", "inovacao", "se destaca", "por que escolher", "por que a logimind", "porque a logimind"]],
+    resposta: "O diferencial é que a LogiMind não só separa a caixa: ela decide o caminhão e a transportadora mais baratos e explica o motivo em voz alta. " +
+              "Ainda tem um gêmeo digital em 3D que mostra a esteira ao vivo. E tudo isso com peças de baixo custo." },
+  { grupos: [["caminhao", "caminhoes", "veiculo"], ["escolhe", "escolha", "decide", "calcula", "define", "sabe qual", "como"]],
+    resposta: "Eu testo os 7 tipos de caminhão, do VUC ao Rodotrem, em quatro coisas: altura, largura, peso total e quantos volumes cabem no baú. " +
+              "Fico com o menor que passa nas quatro, porque caminhão menor é frete mais barato." },
+  { grupos: [["transportadora"], ["escolhe", "escolha", "decide", "calcula", "define", "como", "mais barat"]],
+    resposta: "Depois de escolher o caminhão, eu comparo o preço do frete das três transportadoras para aquele caminhão e fico com a mais barata. " +
+              "A caixa vai para a saída dela: A, B ou C." },
+  { grupos: [["tecnologia", "linguage", "programaram", "programado", "ferramenta", "feito com", "usaram", "software", "codigo"]],
+    resposta: "Na esteira, o ESP32 é programado em C++ pelo Arduino IDE. O site é feito em HTML, CSS e JavaScript e fica na Vercel. " +
+              "O servidor é Node.js com Express, no Render. O banco de dados é MySQL, no Aiven. E eu uso a inteligência artificial Gemini, do Google." },
+  { grupos: [["esp32", "esp 32", "microcontrolador", "cerebro"]],
+    resposta: "O ESP32 é o cérebro da esteira. Ele liga e para o motor pela ponte H L298N, lê o sensor ultrassônico e move os servos do braço. " +
+              "Ele conversa com este painel pelo cabo USB." },
+  { grupos: [["sensor", "ultrassonico", "ultrassom", "hc sr04", "como sabe que a caixa", "como percebe"]],
+    resposta: "O sensor ultrassônico funciona como um morcego: ele manda um som que a gente não escuta e mede quanto tempo o eco demora para voltar. " +
+              "Quando a caixa chega bem perto dele, a esteira para no ponto da câmera." },
+  { grupos: [["qr", "camera", "webcam", "identifica a caixa", "le a caixa", "codigo da caixa"]],
+    resposta: "Cada caixa tem um QR Code com o número do pedido, como P01. A webcam lê esse código aqui no navegador, " +
+              "e assim eu sei exatamente qual é o pedido, sem ninguém digitar nada." },
+  { grupos: [["braco", "robo", "garra", "servo"]],
+    resposta: "O braço robótico é de MDF e tem servos na base, no ombro, no cotovelo e na garra. Quando eu decido a saída, " +
+              "o ESP32 pega a caixa com a garra, gira a base e solta a caixa na saída A, B ou C." },
+  { grupos: [["banco de dados", "banco", "mysql", "aiven", "armazen", "guardad"]],
+    resposta: "Os pedidos e a expedição ficam num banco de dados MySQL na nuvem, no Aiven. O site não fala direto com o banco: " +
+              "ele pede para o nosso servidor, que guarda as senhas em segredo." },
+  { grupos: [["servidor", "render", "node", "express", "back end", "backend", "api"]],
+    resposta: "O servidor é feito em Node.js com Express e fica online no Render. Ele é o meio de campo: busca os pedidos no banco, " +
+              "manda os e-mails pelo Brevo e me conecta à inteligência artificial Gemini." },
+  { grupos: [["quem e voce", "quem voce e", "o que voce e", "voce e uma", "voce e um", "seu nome", "inteligencia artificial", "gemini", "assistente", "como voce funciona"]],
+    resposta: "Eu sou o Logi, o assistente da LogiMind. Eu falo e escuto pelo navegador e uso a inteligência artificial Gemini, do Google, " +
+              "para responder perguntas. Os comandos da esteira, como ligar e parar, funcionam direto aqui no painel." },
+  { grupos: [["gemeo", "3d", "tres d", "simulacao", "maquete virtual"]],
+    resposta: "O gêmeo digital é a esteira em 3D aqui no painel. Ele copia a maquete de verdade ao vivo: " +
+              "quando o sensor vê a caixa ou o braço se mexe, o 3D mostra a mesma coisa na hora." },
+  { grupos: [["custo", "custou", "preco", "quanto custa", "valor", "investimento", "gastaram"],
+             ["projeto", "prototipo", "esteira", "logimind", "peca", "montar", "fazer"]],
+    resposta: "As peças do protótipo custaram por volta de 360 reais: ESP32, motor, ponte H, fonte, sensor ultrassônico, webcam, braço com servos, step-down, " +
+              "protoboard e jumpers. A ideia é ser uma solução de baixo custo." },
+  { grupos: [["quem fez", "quem criou", "quem desenvolveu", "equipe", "grupo", "alunos", "escola", "colegio"]],
+    resposta: "A LogiMind é o trabalho de conclusão de curso de um grupo de alunos do Colégio UNASP, em São Paulo." },
+  { grupos: [["futuro", "proximo passo", "proximos passos", "melhorar", "expandir", "crescer", "empresa de verdade", "mercado", "aplicar"]],
+    resposta: "Dá para crescer sem mudar a ideia: mais saídas, mais tipos de caminhão, preços de frete de verdade e esteiras maiores. " +
+              "Serve para centros de distribuição, transportadoras, armazéns e lojas online." }
+];
+
+// Procura a pergunta pronta que mais combina com a frase (ou null)
+const PARECE_COMANDO = /^(liga|ligar|desliga|desligar|parar|pare|pode|manda|cancela|cancelar|cadastr|baixa|exporta|repete|repetir|inicia|comeca|abre|abrir|ativa|salva|salvar)/;
+function perguntaPronta(t) {
+  if (PARECE_COMANDO.test(t.trim())) return null;   // "ligar a câmera" é comando, não pergunta
+  const frase = " " + t.replace(/[?!.,]/g, " ").replace(/\s+/g, " ") + " ";
+  let melhor = null, melhorNota = 0;
+  for (const p of PERGUNTAS_PRONTAS) {
+    let nota = 0;
+    const todos = p.grupos.every(grupo => {
+      const achou = grupo.filter(palavra => frase.includes(palavra.length <= 3 ? " " + palavra + " " : palavra)).length;
+      nota += achou;
+      return achou > 0;
+    });
+    if (todos && nota > melhorNota) { melhor = p; melhorNota = nota; }
+  }
+  return melhor ? melhor.resposta : null;
+}
+
 // Parece uma pergunta? (começa com "o que", "como", "por que"...)
 const INICIO_PERGUNTA = /^(o que|oque|que|qual|quais|quem|quando|onde|aonde|como|por que|porque|pq|quanto|quantos|quantas|sera|me explica|explica|me fala|me conta|conta|fala sobre|voce sabe|voce pode me|pode me explicar|e se|para que|pra que)\b/;
-function chamouLogi(t) { return /\b(logi|loji|logy)\b/.test(t); }
+// O reconhecimento de voz às vezes escreve o nome dele errado ("lógica", "loja", "logo"...).
+// Os nomes parecidos só contam no começo da frase, para não confundir com conversa normal.
+const NOME_LOGI = /\b(logi|loji|logy|logie|logue|loge|lojy|logic)\b/;
+const NOME_PARECIDO = /^(ei |oi |ola |e ai |hey )?(logica|logico|loja|lojinha|lori|lory|lodge)\b/;
+function chamouLogi(t) { return NOME_LOGI.test(t) || NOME_PARECIDO.test(t.trim()); }
+function tirarNome(t) {
+  return t.replace(new RegExp(NOME_LOGI.source + "[,!]?", "g"), "").replace(NOME_PARECIDO, "").replace(/^[\s,!.]+/, "").trim();
+}
 function pareceUmaPergunta(t) {
-  const semNome = t.replace(/\b(logi|loji|logy)\b[,!]?/g, "").replace(/^[\s,!.]+/, "").trim();
+  const semNome = tirarNome(t);
   return { sim: INICIO_PERGUNTA.test(semNome) || /\?$/.test(semNome), palavras: semNome.split(/\s+/).filter(Boolean).length };
 }
 
 // Entende o que a pessoa pediu
 function entender(textoOriginal, tocou = false) {
   const t = simplificar(textoOriginal);
+
+  // Perguntas prontas sobre o projeto: resposta certa na hora, mesmo sem internet
+  if (!cadastro && (tocou || chamouLogi(t))) {
+    const pronta = perguntaPronta(tirarNome(t));
+    if (pronta) {
+      conversaIA.push({ quem: "pessoa", texto: textoOriginal }, { quem: "logi", texto: pronta });
+      conversaIA = conversaIA.slice(-12);
+      return logiDiz(pronta, pendente ? respostasPendente() : [], "feliz");
+    }
+  }
 
   // Perguntas de verdade (3 palavras ou mais) vão para a IA.
   // Pelo microfone, só se a pessoa chamar "Logi" (para não responder conversa de quem está perto).
@@ -347,7 +470,8 @@ function entenderLocal(textoOriginal, tocou, jaTentouIA) {
   }
 
   if (contem(t, ["repete", "repetir", "de novo", "nao entendi"])) return logiDiz(ultimaFalaLogi, pendente ? respostasPendente() : []);
-  if (contem(t, ["por que", "porque", "motivo", "explica"])) return explicarUltimo();
+  if (contem(t, ["por que", "porque", "motivo", "explica"]) && ultimoAnalisado &&
+      !contem(t, ["projeto", "logimind", "sistema", "trabalho", "tcc", "funciona"])) return explicarUltimo();
   if (pendente && contem(t, ["cancel", "nao", "espera"])) return cancelarPendente();
   if (pendente && contem(t, ["pode mandar", "manda", "confirm", "sim", "pode", "ok", "isso"])) return confirmarPendente();
   if (contem(t, ["camera"])) { ligarCamera(); return; }
@@ -364,12 +488,15 @@ function entenderLocal(textoOriginal, tocou, jaTentouIA) {
 
   // Com o microfone sempre ligado, ele escuta conversas por perto.
   // Só responde "não entendi" se a pessoa chamou o Logi pelo nome.
-  if (!tocou && !t.includes("logi")) {
+  if (!tocou && !chamouLogi(t)) {
+    // era conversa de quem está perto: tira a frase da conversa e continua ouvindo
+    if (conversaLogi.lastElementChild?.classList.contains("msg-voce")) conversaLogi.lastElementChild.remove();
     voceDisseTexto.textContent = "";
     expressao(microfoneLigado ? "ouvindo" : "");
     return;
   }
-  const naoEntendi = () => logiDiz("Não entendi. " + textoAjuda(), ["Ajuda", "Como está?"]);
+  const naoEntendi = () => logiDiz("Não consegui responder isso agora. Tente de outro jeito, ou toque numa das perguntas prontas. " +
+    "Para a esteira, você pode dizer: ligar, parar, pode mandar, cancelar ou como está.", ["Ajuda", "Como está?"]);
   if (jaTentouIA) return naoEntendi();
   conversarComIA(textoOriginal, naoEntendi);   // não era comando: deixa a IA responder
 }
@@ -394,6 +521,7 @@ async function conversarComIA(textoOriginal, seFalhar) {
   if (iaSemChave) return seFalhar();
   expressao("pensando");
   estado("Pensando");
+  mostrarPensando();
   try {
     const resposta = await fetch(API + "/api/logi", {
       method: "POST",
@@ -410,6 +538,7 @@ async function conversarComIA(textoOriginal, seFalhar) {
     executarAcaoIA(acao, fala);
   } catch (erro) {
     console.log("Logi IA não respondeu:", erro.message);
+    conversaLogi.querySelector(".msg-pensando")?.remove();
     estado("Pronto");
     seFalhar();
   }
@@ -572,14 +701,14 @@ function ligarMicrofone() {
   }
   microfoneLigado = true;
   botaoMicrofone.setAttribute("aria-pressed", "true");
-  textoMicrofone.textContent = "Microfone ligado";
+  textoMicrofone.textContent = "Ouvindo sempre";
   continuarOuvindo();
 }
 
 function desligarMicrofone() {
   microfoneLigado = false;
   botaoMicrofone.setAttribute("aria-pressed", "false");
-  textoMicrofone.textContent = "Microfone desligado";
+  textoMicrofone.textContent = "Ouvir sempre";
   pararDeOuvir();
   expressao("");
   estado("Microfone desligado");
@@ -619,6 +748,68 @@ function continuarOuvindo() {
   };
   try { reconhecedor.start(); } catch (e) { /* já estava ouvindo */ }
 }
+
+// Botão de microfone da conversa: ouve UMA frase e responde. Não precisa dizer "Logi".
+let ouvindoUmaVez = null;
+function falarUmaVez(campo) {
+  if (!Reconhecimento) {
+    if (!logiAcordado) acordarSemSaudar();
+    return logiDiz("Este navegador não deixa eu ouvir você. Use o Chrome ou o Edge. Enquanto isso, pode escrever.");
+  }
+  if (ouvindoUmaVez) { ouvindoUmaVez.stop(); return; }   // tocou de novo: termina de ouvir
+  if (!logiAcordado) acordarSemSaudar();
+  speechSynthesis.cancel();
+  pararDeOuvir();                                         // pausa o "ouvir sempre"
+  const botoesFalar = document.querySelectorAll("[data-falar]");
+  const textoAntes = campo.placeholder;
+  let frase = "";
+  const r = new Reconhecimento();
+  r.lang = "pt-BR";
+  r.continuous = false;
+  r.interimResults = true;
+  ouvindoUmaVez = r;
+  r.onstart = () => {
+    botoesFalar.forEach(b => b.classList.add("ouvindo"));
+    campo.placeholder = "Pode falar, estou ouvindo...";
+    expressao("ouvindo");
+    estado("Estou ouvindo");
+  };
+  r.onresult = (e) => {
+    let texto = "";
+    for (const resultado of e.results) texto += resultado[0].transcript;
+    campo.value = texto;          // a frase aparece enquanto você fala
+    frase = texto;
+  };
+  r.onerror = (e) => {
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+      logiDiz("O navegador bloqueou o microfone. Clique no cadeado ao lado do endereço e permita o microfone.");
+    } else if (e.error === "network") {
+      logiDiz("Para eu ouvir você, o computador precisa estar com internet. Enquanto isso, pode escrever.");
+    } else if (e.error === "audio-capture") {
+      logiDiz("Não encontrei nenhum microfone. Confira se ele está ligado no computador.");
+    }
+  };
+  r.onend = () => {
+    ouvindoUmaVez = null;
+    botoesFalar.forEach(b => b.classList.remove("ouvindo"));
+    campo.placeholder = textoAntes;
+    campo.value = "";
+    if (frase.trim()) return voceDisse(frase.trim(), true);
+    expressao("");
+    estado("Pronto");
+    continuarOuvindo();
+  };
+  try { r.start(); } catch (e) { ouvindoUmaVez = null; }
+}
+document.querySelectorAll("[data-falar]").forEach(botao => {
+  botao.addEventListener("click", () => falarUmaVez(document.getElementById(botao.dataset.falar)));
+});
+document.querySelectorAll(".sugestao").forEach(botao => {
+  botao.addEventListener("click", () => {
+    if (!logiAcordado) acordarSemSaudar();
+    voceDisse(botao.textContent, true);
+  });
+});
 
 function pararDeOuvir() {
   if (reconhecedor) { reconhecedor.onend = () => { ouvindoAgora = false; }; reconhecedor.abort(); }
@@ -1122,7 +1313,10 @@ function concluirPedido(c) {
     setTimeout(() => { separandoDemo = false; if (modoDemo) atualizarStatus({ carga: false }); }, 7500);
   } else {
     if (usbConectado()) enviarTexto("desviar:" + c.transportadora);
-    else textoCamera.textContent += " O ESP32 não está conectado, então o braço não foi acionado.";
+    else {
+      textoCamera.textContent += " O ESP32 não está conectado: o braço só se mexeu no 3D.";
+      gemeo("separar", c.transportadora);   // sem a maquete, o 3D mostra o braço sozinho
+    }
   }
 }
 
@@ -1131,8 +1325,13 @@ const textoCamera = document.getElementById("textoCamera");
 
 function processarCodigo(textoLido) {
   const codigo = textoLido.trim().toUpperCase();
+  if (pendente && pendente.pedido !== codigo) {
+    gemeo("registrar", `${pendente.pedido} ficou sem resposta: troquei pela caixa nova`, "");
+    pendente = null;
+  }
   const dados = pedidos[codigo];
   if (!dados) {
+    gemeo("registrar", `QR ${codigo} lido, mas não está na planilha`, "alerta");
     textoCamera.textContent = `Li "${codigo}", mas esse pedido não está cadastrado.`;
     logiDiz(`Li o código ${codigo}, mas esse pedido não está na planilha de recebimentos. Quer cadastrar agora?`, ["Cadastrar pedido", "Não"]);
     codigoNaoEncontrado = codigo;
@@ -1142,6 +1341,7 @@ function processarCodigo(textoLido) {
   const pedido = { ...dados, pedido: codigo };
   pedido.veiculo = caminhaoIdeal(pedido);
   if (pedido.veiculo === "Nenhum") {
+    gemeo("registrar", `QR ${codigo} lido, mas não cabe em nenhum caminhão`, "alerta");
     textoCamera.textContent = `O pedido ${codigo} não cabe em nenhum caminhão.`;
     logiDiz(`O pedido ${codigo} não cabe em nenhum caminhão. Ele precisa ser dividido em mais de uma viagem.`);
     return;
@@ -1244,7 +1444,9 @@ function lerQuadro(agora) {
   horaUltimoCodigo = Date.now();
   if (mesmaCaixa) return;
   ultimoCodigo = codigo;
-  if (pendente) return;   // ainda esperando a resposta sobre a caixa anterior
+  // Se o Logi ainda espera a resposta sobre ESSA caixa, não lê de novo.
+  // Se apareceu OUTRA caixa, a anterior é deixada de lado e a nova é lida.
+  if (pendente && pendente.pedido === codigo) return;
   processarCodigo(codigo);
 }
 

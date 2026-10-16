@@ -184,7 +184,8 @@
 
           <!-- Logi: o personagem que conversa por voz com quem opera a esteira -->
           <div class="logi">
-            <div class="logi-palco">
+            <div class="logi-lado">
+              <div class="logi-palco">
               <svg id="logiBoneco" class="boneco" viewBox="0 0 200 200" role="img" aria-label="Logi, uma caixinha de papelão com rosto">
                 <circle class="anel-ouvindo" cx="100" cy="104" r="92"/>
                 <ellipse class="sombra" cx="100" cy="186" rx="52" ry="7"/>
@@ -219,29 +220,43 @@
                   <ellipse cx="100" cy="142" rx="10" ry="8" class="boca-aberta"/>
                 </g>
               </svg>
-              <button id="botaoComecar" class="botao-comecar">Toque para conversar com o Logi</button>
+                <button id="botaoComecar" class="botao-comecar">Toque para conversar</button>
+              </div>
+              <p class="logi-nome">Logi</p>
+              <p id="logiEstado" class="logi-estado">Esperando você tocar para começar</p>
+              <div class="logi-controles">
+                <button id="botaoMicrofone" class="botao-microfone" aria-pressed="false" title="Fica ouvindo o tempo todo. Comece a frase com &quot;Logi&quot;.">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+                  <span id="textoMicrofone">Ouvir sempre</span>
+                </button>
+                <button id="botaoVoz" class="botao-voz" aria-pressed="true">Som ligado</button>
+              </div>
             </div>
 
-            <p class="logi-nome">Logi</p>
-            <p id="logiEstado" class="logi-estado">Esperando você tocar para começar</p>
-            <p id="legendaLogi" class="legenda-logi" aria-live="polite">Oi, eu sou o Logi! Toque no botão para eu poder falar e ouvir você.</p>
-            <p id="voceDisseTexto" class="voce-disse"></p>
+            <div class="logi-chat">
+              <div class="logi-chat-topo">
+                <p class="console-titulo">Conversa com o Logi</p>
+                <p class="logi-dica">Toque no microfone e fale. Não precisa dizer o nome dele.</p>
+              </div>
+              <ol id="conversaLogi" class="conversa" aria-label="Conversa com o Logi">
+                <li class="msg msg-logi">Oi, eu sou o Logi! Pode me perguntar qualquer coisa sobre a LogiMind.</li>
+              </ol>
+              <p id="legendaLogi" class="somente-leitor" aria-live="polite">Oi, eu sou o Logi! Pode me perguntar qualquer coisa sobre a LogiMind.</p>
+              <p id="voceDisseTexto" class="somente-leitor"></p>
 
-            <div id="respostasRapidas" class="respostas-rapidas"></div>
+              <div id="respostasRapidas" class="respostas-rapidas"></div>
+              <div class="sugestoes" aria-label="Perguntas prontas">
+                <button type="button" class="sugestao">Como funciona o projeto?</button>
+                <button type="button" class="sugestao">Qual é o diferencial?</button>
+                <button type="button" class="sugestao">Como escolhe o caminhão?</button>
+                <button type="button" class="sugestao">Quais tecnologias vocês usaram?</button>
+              </div>
 
-            <form id="formLogi" class="logi-escrever">
-              <input id="textoLogi" type="text" autocomplete="off" maxlength="300" placeholder="Pergunte qualquer coisa ao Logi" aria-label="Escreva para o Logi">
-              <button type="submit" aria-label="Enviar">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </button>
-            </form>
-
-            <div class="logi-controles">
-              <button id="botaoMicrofone" class="botao-microfone" aria-pressed="false">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
-                <span id="textoMicrofone">Microfone desligado</span>
-              </button>
-              <button id="botaoVoz" class="botao-voz" aria-pressed="true">Som ligado</button>
+              <form id="formLogi" class="logi-escrever">
+                <button type="button" class="botao-falar" data-falar="textoLogi" aria-label="Falar com o Logi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+                <input id="textoLogi" type="text" autocomplete="off" maxlength="300" placeholder="Pergunte qualquer coisa ao Logi" aria-label="Escreva para o Logi">
+                <button type="submit" aria-label="Enviar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+              </form>
             </div>
           </div>
         </div>
@@ -339,6 +354,7 @@
       <p id="legendaFlutuante" class="legenda-flutuante"></p>
       <div id="respostasFlutuante" class="respostas-rapidas"></div>
       <form id="formFlutuante" class="logi-escrever">
+        <button type="button" class="botao-falar" data-falar="textoFlutuante" aria-label="Falar com o Logi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
         <input id="textoFlutuante" type="text" autocomplete="off" maxlength="300" placeholder="Fale com o Logi" aria-label="Escreva para o Logi">
         <button type="submit" aria-label="Enviar">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
