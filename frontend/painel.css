@@ -702,3 +702,22 @@ body {
   .logi-chat { padding-left: 0; border-left: 0; border-top: 1px solid var(--cor-borda); padding-top: 14px; }
   .conversa { height: 280px; }
 }
+
+/* no celular, o Logi do canto não cobre o texto do rodapé */
+@media (max-width: 640px) {
+  .rodape { padding: 24px 96px 28px 16px; text-align: left; }
+}
+
+/* escolher a voz do Logi */
+.logi-voz { display: grid; gap: 4px; text-align: left; font-size: 0.74rem; color: var(--cor-suave); }
+.logi-voz[hidden] { display: none; }
+.logi-voz select {
+  width: 100%; padding: 7px 10px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--cor-borda); background: var(--cor-cartao-2); color: var(--cor-texto);
+  font: inherit; font-size: 0.78rem;
+}
+.logi-voz select:focus-visible { outline: 2px solid var(--cor-azul); outline-offset: 2px; }
+@media (max-width: 700px) {
+  .logi-lado .logi-controles { flex-wrap: wrap; }
+  .logi-voz { flex-basis: 100%; }
+}

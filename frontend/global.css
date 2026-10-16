@@ -531,3 +531,53 @@ button:focus-visible {
 html {
   scroll-padding-top: 84px;
 }
+
+/* ---------- 12. RODAPÉ E RESPIROS NO CELULAR ---------- */
+@media (max-width: 900px) {
+  .secao {
+    padding: 64px 0;
+  }
+
+  .rodape {
+    padding: 44px 0 28px;
+  }
+
+  /* tudo centralizado, com os links em duas colunas */
+  .rodape-interno {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .rodape .marca {
+    margin: 0;
+  }
+
+  .rodape-lista {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: center;
+    gap: 6px 36px;
+  }
+
+  .rodape-lista a {
+    display: inline-block;
+    padding: 8px 4px;
+  }
+
+  .rodape-direitos {
+    margin-top: 0;
+    padding-top: 18px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+}
+
+@media (max-width: 900px) {
+  /* número ímpar de links: o último fica centralizado sozinho */
+  .rodape-lista li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}

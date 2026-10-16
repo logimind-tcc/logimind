@@ -137,10 +137,68 @@ function estado(texto) {
   logiEstado.classList.toggle("pensando", texto === "Pensando");
 }
 
-function escolherVoz() {
-  const vozes = speechSynthesis.getVoices();
-  return vozes.find(v => v.lang === "pt-BR") || vozes.find(v => v.lang.startsWith("pt")) || null;
+// ---------- Voz do Logi ----------
+// Cada navegador tem vozes diferentes. O Logi usa a primeira desta lista que existir no computador.
+// As melhores são as "Natural" do Microsoft Edge (Francisca e Antonio).
+const VOZES_PREFERIDAS = ["Francisca", "Antonio", "Thalita", "Google português do Brasil", "Luciana", "Maria", "Daniel", "Felipe"];
+const seletorVoz = document.getElementById("vozLogi");
+let vozSalva = "";
+try { vozSalva = localStorage.getItem("logi-voz") || ""; } catch (e) {}
+
+function vozesPortugues() {
+  if (!("speechSynthesis" in window)) return [];
+  return speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith("pt"));
 }
+
+function escolherVoz() {
+  const vozes = vozesPortugues();
+  if (!vozes.length) return null;
+  if (vozSalva) {
+    const salva = vozes.find(v => v.name === vozSalva);
+    if (salva) return salva;
+  }
+  for (const nome of VOZES_PREFERIDAS) {
+    const v = vozes.find(v => v.name.includes(nome) && v.lang.replace("_", "-") === "pt-BR");
+    if (v) return v;
+  }
+  return vozes.find(v => v.lang.replace("_", "-") === "pt-BR") || vozes[0];
+}
+
+// "Microsoft Francisca Online (Natural) - Portuguese (Brazil)" vira "Francisca (natural)"
+function nomeCurtoVoz(v) {
+  let nome = v.name.replace(/^Microsoft\s+/, "").replace(/\s+-\s+.*$/, "");
+  nome = nome.replace(/\s+Online\s+\(Natural\)/, " (natural)");
+  if (!v.lang.replace("_", "-").startsWith("pt-BR")) nome += " · Portugal";
+  return nome;
+}
+
+function listarVozes() {
+  if (!seletorVoz) return;
+  const vozes = vozesPortugues();
+  const atual = escolherVoz();
+  seletorVoz.innerHTML = '<option value="">Automática' + (atual ? " (" + nomeCurtoVoz(atual) + ")" : "") + "</option>" +
+    vozes.map(v => `<option value="${v.name.replace(/"/g, "&quot;")}">${nomeCurtoVoz(v)}</option>`).join("");
+  seletorVoz.value = vozes.some(v => v.name === vozSalva) ? vozSalva : "";
+  seletorVoz.closest(".logi-voz").hidden = vozes.length < 2;
+}
+if ("speechSynthesis" in window) {
+  listarVozes();
+  speechSynthesis.addEventListener?.("voiceschanged", listarVozes);
+}
+seletorVoz?.addEventListener("change", () => {
+  vozSalva = seletorVoz.value;
+  try { localStorage.setItem("logi-voz", vozSalva); } catch (e) {}
+  // fala uma frase de teste com a voz nova
+  speechSynthesis.cancel();
+  const teste = new SpeechSynthesisUtterance("Oi! Eu sou o Logi, e essa é a minha voz.");
+  teste.lang = "pt-BR";
+  teste.rate = 1.05;
+  teste.pitch = 1.15;
+  const voz = escolherVoz();
+  if (voz) teste.voice = voz;
+  speechSynthesis.speak(teste);
+  listarVozes();
+});
 
 function bipe() {
   if (!contextoSom) return;

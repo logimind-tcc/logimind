@@ -382,3 +382,14 @@
     font-size: 0.7rem;
   }
 }
+
+/* no celular os números do desenho ficam menores, para não encostarem uns nos outros */
+@media (max-width: 560px) {
+  .marcador {
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border-width: 1.5px;
+    font-size: 0.64rem;
+  }
+}
