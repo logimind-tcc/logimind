@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (!emailValido(email)) {
-      mostrarAviso("Digite um e-mail valido, como voce@empresa.com.", "erro");
+      mostrarAviso("Digite um e-mail válido, como voce@empresa.com.", "erro");
       campoEmail.focus();
       return;
     }
@@ -71,11 +71,49 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (erro) {
       console.error(erro);
       mostrarAviso(
-        "Nao foi possivel enviar agora. Ligue o servidor (npm run dev) e tente de novo.",
+        "Não foi possível enviar agora. O servidor pode estar acordando: espere uns 30 segundos e tente de novo.",
         "erro"
       );
     } finally {
       botaoCadastrar.disabled = false;
     }
+  });
+});
+
+/* ==========================================================
+   COMO FUNCIONA: a caixinha anda pelos 4 passos
+   POR QUE: troca entre "Separação manual" e "Com a LogiMind" (no celular)
+   ========================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  const passos = [...document.querySelectorAll(".fluxo-passo")];
+  const trilho = document.querySelector(".fluxo-trilho");
+  let atual = 0;
+  let parado = false;
+
+  function ativar(i) {
+    atual = i;
+    passos.forEach((p, k) => p.classList.toggle("ativo", k === i));
+    if (trilho) trilho.style.setProperty("--posicao", i / (passos.length - 1));
+  }
+
+  if (passos.length) {
+    ativar(0);
+    passos.forEach((p, i) => {
+      p.addEventListener("mouseenter", () => { parado = true; ativar(i); });
+      p.addEventListener("click", () => { parado = true; ativar(i); });
+      p.addEventListener("mouseleave", () => { parado = false; });
+    });
+    const semAnimacao = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!semAnimacao) {
+      setInterval(() => { if (!parado) ativar((atual + 1) % passos.length); }, 2600);
+    }
+  }
+
+  const grade = document.querySelector(".comparar-grade");
+  document.querySelectorAll(".comparar-abas button").forEach((botao) => {
+    botao.addEventListener("click", () => {
+      grade.dataset.mostrar = botao.dataset.lado;
+      document.querySelectorAll(".comparar-abas button").forEach((b) => b.setAttribute("aria-selected", b === botao));
+    });
   });
 });

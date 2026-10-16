@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="LogiMind - Esteira inteligente para separacao automatizada de mercadorias com leitura de QR Code e ESP32."
+      content="LogiMind - Esteira inteligente para separação automatizada de mercadorias com leitura de QR Code e ESP32."
     />
-    <title>LogiMind | Esteira Inteligente para Automacao Logistica</title>
+    <title>LogiMind | Esteira Inteligente para Automação Logística</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,21 +24,21 @@
     <!-- ===================== CABECALHO ===================== -->
     <header class="cabecalho">
       <div class="conteiner cabecalho-interno">
-        <a class="marca" href="home.html" aria-label="LogiMind - pagina inicial">
+        <a class="marca" href="home.html" aria-label="LogiMind - página inicial">
           
 
             <img src="./pecas/logo.png" alt="logo">
           LOGIMIND
         </a>
-        <nav class="navegacao" id="navegacao" aria-label="Navegacao principal">
+        <nav class="navegacao" id="navegacao" aria-label="Navegação principal">
           <ul class="navegacao-lista">
             <li><a class="ativo" href="home.html">Home</a></li>
             <li><a href="instrucao.html">Instruções</a></li>
             <li><a href="produto.html">Produto</a></li>
-            <li><a href="referencias.html" title="Disponivel na Etapa 2">Referencias</a></li>
+            <li><a href="referencias.html" title="Disponível na Etapa 2">Referências</a></li>
             <li><a href="sobrenos.html">Sobre Nós</a></li>
             <li><a href="painel.html">Painel</a></li>
-            <li><a href="jogo.html" title="Disponivel na Etapa 2">Jogo</a></li>
+            <li><a href="jogo.html" title="Disponível na Etapa 2">Jogo</a></li>
             <li><a class="link-cadastro" href="home.html#cadastro">Cadastre-se</a></li>
           </ul>
         </nav>
@@ -88,13 +88,13 @@
               A solução completa para a separação automatizada de mercadorias.
             </p>
             <p class="hero-descricao">
-              Utilizando leitura de QR Code, ESP32 e inteligencia embarcada para
+              Utilizando leitura de QR Code, ESP32 e inteligência embarcada para
               otimizar processos logísticos com eficiência, precisão e baixo
               custo.
             </p>
             <div class="hero-botoes">
               <a class="botao botao-primario" href="produto.html"
-                >Conheca o projeto</a>
+                >Conheça o projeto</a>
               <a class="botao botao-secundario" href="instrucao.html"
                 >Ver demonstração</a>
             </div>
@@ -102,7 +102,7 @@
 
           <!-- Ilustracao da esteira (SVG proprio, sem depender de imagem externa) -->
           <div class="hero-imagem">
-            <svg viewBox="0 0 520 380" role="img" aria-label="Ilustracao de uma esteira transportadora com braco robotico separando caixas">
+            <svg viewBox="0 0 520 380" role="img" aria-label="Ilustração de uma esteira transportadora com braço robótico separando caixas">
               <defs>
                 <linearGradient id="gradEsteira" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stop-color="#1358e3" />
@@ -164,101 +164,111 @@
         </div>
       </section>
 
-      <!-- ===================== RECURSOS ===================== -->
+      <!-- ===================== COMO FUNCIONA (4 passos) ===================== -->
       <section class="secao secao-alternada" aria-labelledby="titulo-recursos">
         <div class="conteiner">
           <h2 id="titulo-recursos" class="titulo-secao">
-            Como o sistema <span>funciona</span>
+            Do sensor ao <span>caminhão</span>
           </h2>
           <p class="texto-apoio">
-            Quatro blocos integrados fazem a mercadoria entrar, ser identificada
-            e sair no lugar certo, sem intervenção manual.
+            Cada caixa passa por quatro etapas, sem ninguém digitar nada. Passe o
+            mouse (ou toque) em uma etapa para ver o que acontece nela.
           </p>
 
-          <div class="grade-recursos">
-            <article class="cartao">
-              <div class="icone-quadrado">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3" />
-                  <rect x="8" y="8" width="8" height="8" rx="1" />
-                </svg>
-              </div>
-              <h3 class="cartao-titulo">Leitura de QR Code</h3>
-              <p>Identificação rápida e precisa das cargas assim que entram na esteira.</p>
-            </article>
-
-            <article class="cartao">
-              <div class="icone-quadrado">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" />
-                </svg>
-              </div>
-              <h3 class="cartao-titulo">Controle inteligente</h3>
-              <p>Um ESP32 integra todos os componentes e coordena cada decisão.</p>
-            </article>
-
-            <article class="cartao">
-              <div class="icone-quadrado">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <path d="M3 12h4l3-7 4 14 3-7h4" />
-                </svg>
-              </div>
-              <h3 class="cartao-titulo">Automação</h3>
-              <p>Separacao automática das cargas com servo motores de alto torque.</p>
-            </article>
-
-            <article class="cartao">
-              <div class="icone-quadrado">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <rect x="2" y="4" width="20" height="14" rx="2" />
-                  <path d="M8 21h8M12 18v3M6 12l3-3 3 3 3-4" />
-                </svg>
-              </div>
-              <h3 class="cartao-titulo">Monitoramento</h3>
-              <p>Acompanhe o fluxo de mercadorias em tempo real pelo painel.</p>
-            </article>
-          </div>
+          <ol class="fluxo" id="fluxo">
+            <li class="fluxo-passo">
+              <span class="fluxo-num">01</span>
+              <span class="fluxo-peca">HC-SR04</span>
+              <h3>A esteira percebe a caixa</h3>
+              <p>O sensor ultrassônico mede a distância. Quando a caixa chega, a esteira anda mais um pouquinho e para no ponto certo.</p>
+            </li>
+            <li class="fluxo-passo">
+              <span class="fluxo-num">02</span>
+              <span class="fluxo-peca">Webcam + QR</span>
+              <h3>O código é lido</h3>
+              <p>A webcam lê o QR Code (P01, P02…) e o painel busca no banco de dados as medidas, o peso e a quantidade do pedido.</p>
+            </li>
+            <li class="fluxo-passo">
+              <span class="fluxo-num">03</span>
+              <span class="fluxo-peca">Painel</span>
+              <h3>O caminhão é escolhido</h3>
+              <p>O painel testa do VUC ao Rodotrem e fica com o menor em que a carga cabe. Depois compara as transportadoras e pega o frete mais barato.</p>
+            </li>
+            <li class="fluxo-passo">
+              <span class="fluxo-num">04</span>
+              <span class="fluxo-peca">Braço · 4 servos</span>
+              <h3>A caixa vai para a saída</h3>
+              <p>O ESP32 move o braço robótico até a saída A, B ou C, e a expedição fica registrada com data, caminhão e frete.</p>
+            </li>
+          </ol>
+          <div class="fluxo-trilho" aria-hidden="true"><span class="fluxo-caixa"></span></div>
         </div>
       </section>
 
-      <!-- ===================== DIFERENCIAL / PUBLICO / OBJETIVO ===================== -->
+      <!-- ===================== POR QUE: MANUAL x LOGIMIND ===================== -->
       <section class="secao" id="sobre-nos" aria-labelledby="titulo-projeto">
         <div class="conteiner">
           <h2 id="titulo-projeto" class="titulo-secao">
             Por que a <span>LOGIMIND</span>
           </h2>
+          <p class="texto-apoio">
+            A mesma caixa, separada de dois jeitos.
+          </p>
 
-          <div class="grade-pilares">
-            <article class="cartao pilar">
-              <h3 class="pilar-titulo">Diferencial</h3>
-              <ul class="lista-marcada">
-                <li>Automação completa do processo</li>
-                <li>Baixo custo de implementação</li>
-                <li>Modularidade e fácil manutenção</li>
-                <li>Feedback visual e sonoro</li>
-                <li>Sistema expansível</li>
-              </ul>
-            </article>
+          <div class="comparar" id="comparar">
+            <div class="comparar-abas" role="tablist" aria-label="Escolha o jeito de separar">
+              <button type="button" role="tab" aria-selected="false" data-lado="manual">Separação manual</button>
+              <button type="button" role="tab" aria-selected="true" data-lado="logimind">Com a LogiMind</button>
+            </div>
 
-            <article class="cartao pilar">
-              <h3 class="pilar-titulo">Publico-alvo</h3>
-              <ul class="lista-marcada">
-                <li>Centros logísticos</li>
-                <li>Transportadoras</li>
-                <li>Armazens</li>
-                <li>Empresas de distribuição</li>
-              </ul>
-            </article>
+            <div class="comparar-grade" data-mostrar="logimind">
+              <div class="comparar-cabeca manual">
+                <span class="comparar-rotulo">Separação manual</span>
+                <span class="comparar-resumo">4 decisões nas mãos de uma pessoa</span>
+              </div>
+              <div class="comparar-cabeca logimind">
+                <span class="comparar-rotulo">Com a LogiMind</span>
+                <span class="comparar-resumo">4 decisões automáticas e registradas</span>
+              </div>
 
-            <article class="cartao pilar pilar-objetivo">
-              <h3 class="pilar-titulo">Objetivo</h3>
-              <p>
-                Automatizar o processo de triagem logística, reduzindo erros
-                humanos e aumentando a eficiência operacional, com agilidade e
-                confiabilidade em cada etapa.
-              </p>
-            </article>
+              <p class="comparar-item manual"><b>Identificar</b>O conferente lê a etiqueta e digita o código. Um número trocado manda a carga errada.</p>
+              <p class="comparar-item logimind"><b>Identificar</b>A webcam lê o QR Code em instantes. O código vem exatamente como foi cadastrado.</p>
+
+              <p class="comparar-item manual"><b>Consultar</b>Procura o pedido em papel ou planilha para saber medidas e peso.</p>
+              <p class="comparar-item logimind"><b>Consultar</b>O pedido vem do banco de dados, com medidas, peso e quantidade.</p>
+
+              <p class="comparar-item manual"><b>Escolher o caminhão</b>Escolhe “no olho”. Caminhão grande demais custa mais; pequeno demais não fecha a porta.</p>
+              <p class="comparar-item logimind"><b>Escolher o caminhão</b>Testa altura, largura, peso e quantidade em cada caminhão e pega o menor que serve, com o frete mais barato.</p>
+
+              <p class="comparar-item manual"><b>Registrar</b>Anota à mão para onde a carga foi, quando lembra.</p>
+              <p class="comparar-item logimind"><b>Registrar</b>Cada saída é gravada na expedição, com data, caminhão, transportadora e frete.</p>
+            </div>
+          </div>
+
+          <figure class="manifesto">
+            <blockquote>
+              Automatizar a triagem logística, reduzindo erros humanos e
+              aumentando a eficiência, com agilidade e confiabilidade em cada etapa.
+            </blockquote>
+            <figcaption>Objetivo do projeto</figcaption>
+          </figure>
+
+          <dl class="diferenciais">
+            <div><dt>Baixo custo</dt><dd>Peças acessíveis: ESP32, servos SG90, webcam USB e um braço de MDF.</dd></div>
+            <div><dt>Explica o que faz</dt><dd>O Logi conta por voz qual caminhão foi escolhido e por quê.</dd></div>
+            <div><dt>Gêmeo digital</dt><dd>O painel mostra em 3D, ao vivo, o que a maquete está fazendo.</dd></div>
+            <div><dt>Expansível</dt><dd>Mais saídas, mais caminhões e mais pedidos sem mudar a ideia.</dd></div>
+          </dl>
+        </div>
+
+        <!-- Para quem: faixa que anda devagar -->
+        <div class="faixa-publico" aria-label="Para quem é a LogiMind">
+          <p class="etiqueta faixa-titulo">Feito para</p>
+          <div class="faixa-janela">
+            <ul class="faixa-trilha">
+              <li>Centros de distribuição</li><li>Transportadoras</li><li>Armazéns</li><li>E-commerce</li><li>Indústrias</li><li>Atacadistas</li><li>Operadores logísticos</li>
+              <li aria-hidden="true">Centros de distribuição</li><li aria-hidden="true">Transportadoras</li><li aria-hidden="true">Armazéns</li><li aria-hidden="true">E-commerce</li><li aria-hidden="true">Indústrias</li><li aria-hidden="true">Atacadistas</li><li aria-hidden="true">Operadores logísticos</li>
+            </ul>
           </div>
         </div>
       </section>
@@ -271,8 +281,8 @@
               Receba a <span>demonstração</span>
             </h2>
             <p class="texto-apoio">
-              Deixe seu contato e enviamos o video completo da esteira em
-              operacao junto com a lista de componentes.
+              Deixe seu contato e enviamos o vídeo completo da esteira em
+              operação junto com a lista de componentes.
             </p>
           </div>
 
@@ -305,10 +315,10 @@
           <li><a href="produto.html">Comprar</a></li>
           <li><a href="sobrenos.html">Quem somos</a></li>
           <li><a href="instrucao.html">Guia</a></li>
-          <li><a href="cadastro.html">Contato e suporte</a></li>
+          <li><a href="sobrenos.html#contato">Contato e suporte</a></li>
         </ul>
         <p class="rodape-direitos">
-          LogiMind - Projeto academico de automacao logistica. Todos os direitos
+          LogiMind - Projeto acadêmico de automação logística. Todos os direitos
           reservados.
         </p>
       </div>

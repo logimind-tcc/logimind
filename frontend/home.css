@@ -95,65 +95,291 @@
   }
 }
 
-/* ---------- GRADE DE RECURSOS ---------- */
-.grade-recursos {
+/* ---------- COMO FUNCIONA: 4 PASSOS ---------- */
+.fluxo {
+  list-style: none;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-top: 40px;
+  gap: 0;
+  margin-top: 44px;
+  counter-reset: passo;
 }
 
-.cartao-titulo {
-  font-size: 1.06rem;
-  font-weight: 700;
+.fluxo-passo {
+  position: relative;
+  padding: 26px 24px 28px;
+  border-top: 2px solid var(--cor-borda);
+  cursor: default;
+  transition: background-color var(--transicao), border-color var(--transicao);
+}
+
+.fluxo-passo + .fluxo-passo {
+  border-left: 1px solid var(--cor-borda);
+}
+
+.fluxo-passo.ativo {
+  background-color: var(--cor-cartao);
+  border-top-color: var(--cor-azul);
+}
+
+.fluxo-num {
+  display: block;
+  font-family: var(--fonte-titulo);
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--cor-borda);
+  transition: color var(--transicao);
+}
+
+.fluxo-passo.ativo .fluxo-num {
+  color: var(--cor-azul);
+}
+
+.fluxo-peca {
+  display: inline-block;
+  margin: 14px 0 10px;
+  padding: 3px 9px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 0.74rem;
+  color: var(--cor-titulo);
+}
+
+.fluxo-passo h3 {
+  font-size: 1.08rem;
   margin-bottom: 8px;
 }
 
-.grade-recursos p {
-  font-size: 0.94rem;
+.fluxo-passo p {
+  font-size: 0.93rem;
 }
 
-/* ---------- PILARES ---------- */
-.grade-pilares {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+/* a esteirinha embaixo, com a caixa andando até o passo ativo */
+.fluxo-trilho {
+  --posicao: 0;
+  position: relative;
+  height: 14px;
+  margin-top: 6px;
+  border-radius: 99px;
+  background: repeating-linear-gradient(90deg, var(--cor-borda) 0 14px, transparent 14px 22px);
+}
+
+.fluxo-caixa {
+  position: absolute;
+  top: -20px;
+  left: calc(12.5% + var(--posicao) * 75%);
+  width: 30px;
+  height: 24px;
+  margin-left: -15px;
+  border-radius: 3px;
+  background: linear-gradient(#c1904f 0 6px, #d9a86a 6px);
+  box-shadow: inset 9px 9px 0 -3px #d9a86a, inset 9px 9px 0 0 #fff;
+  transition: left 0.9s cubic-bezier(0.6, 0, 0.3, 1);
+}
+
+/* ---------- POR QUE: MANUAL x LOGIMIND ---------- */
+.comparar {
   margin-top: 40px;
 }
 
-.pilar {
-  border-top: 4px solid var(--cor-azul);
+.comparar-abas {
+  display: none;
 }
 
-.pilar-titulo {
-  font-size: 0.86rem;
+.comparar-grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 0;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-grande);
+  overflow: hidden;
+  background-color: var(--cor-cartao);
+}
+
+.comparar-cabeca {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 22px 26px;
+}
+
+.comparar-cabeca.manual {
+  background-color: var(--cor-fundo-alt);
+}
+
+.comparar-cabeca.logimind {
+  background-color: var(--cor-azul);
+  color: #fff;
+}
+
+.comparar-rotulo {
+  font-family: var(--fonte-titulo);
+  font-size: 1.15rem;
   font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--cor-azul);
-  margin-bottom: 14px;
+  color: var(--cor-titulo);
 }
 
-.lista-marcada li {
-  position: relative;
-  padding-left: 20px;
-  margin-bottom: 9px;
+.comparar-cabeca.logimind .comparar-rotulo {
+  color: #fff;
+}
+
+.comparar-resumo {
+  font-size: 0.88rem;
+}
+
+.comparar-cabeca.logimind .comparar-resumo {
+  color: #dbe6ff;
+}
+
+.comparar-item {
+  padding: 18px 26px;
+  border-top: 1px solid var(--cor-borda);
   font-size: 0.95rem;
 }
 
-.lista-marcada li::before {
+.comparar-item b {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--fonte-titulo);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.comparar-item.manual {
+  background-color: var(--cor-fundo-alt);
+  color: var(--cor-texto);
+}
+
+.comparar-item.manual b {
+  color: var(--cor-texto);
+}
+
+.comparar-item.logimind {
+  color: var(--cor-titulo);
+  border-left: 1px solid var(--cor-borda);
+}
+
+.comparar-item.logimind b {
+  color: var(--cor-azul);
+}
+
+/* frase do objetivo */
+.manifesto {
+  margin: 64px 0 0;
+  padding-left: 28px;
+  border-left: 4px solid var(--cor-azul);
+}
+
+.manifesto blockquote {
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.35rem, 2.6vw, 2rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--cor-titulo);
+  max-width: 880px;
+}
+
+.manifesto figcaption {
+  margin-top: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cor-azul);
+}
+
+/* diferenciais em linhas, sem cartões */
+.diferenciais {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 44px;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.diferenciais > div {
+  padding: 20px 22px 0 0;
+}
+
+.diferenciais > div + div {
+  padding-left: 22px;
+  border-left: 1px solid var(--cor-borda);
+}
+
+.diferenciais dt {
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  color: var(--cor-titulo);
+  margin-bottom: 6px;
+}
+
+.diferenciais dd {
+  font-size: 0.92rem;
+}
+
+/* faixa "Feito para" */
+.faixa-publico {
+  margin-top: 72px;
+  padding: 26px 0;
+  border-top: 1px solid var(--cor-borda);
+  border-bottom: 1px solid var(--cor-borda);
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  overflow: hidden;
+}
+
+.faixa-titulo {
+  flex-shrink: 0;
+  padding-left: max(24px, calc((100vw - var(--largura-maxima)) / 2 + 24px));
+}
+
+.faixa-janela {
+  flex: 1;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.faixa-trilha {
+  display: flex;
+  width: max-content;
+  animation: faixaAnda 38s linear infinite;
+}
+
+.faixa-trilha li {
+  font-family: var(--fonte-titulo);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--cor-titulo);
+  white-space: nowrap;
+  padding: 0 28px;
+  position: relative;
+}
+
+.faixa-trilha li::after {
   content: "";
   position: absolute;
-  left: 0;
-  top: 10px;
-  width: 7px;
-  height: 7px;
+  right: -4px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
   border-radius: 2px;
   background-color: var(--cor-azul);
 }
 
-.pilar-objetivo p {
-  font-size: 0.97rem;
+.faixa-publico:hover .faixa-trilha {
+  animation-play-state: paused;
+}
+
+@keyframes faixaAnda {
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* ---------- CADASTRO ---------- */
@@ -213,8 +439,25 @@
 
 /* ---------- RESPONSIVO ---------- */
 @media (max-width: 1000px) {
-  .grade-recursos {
+  .fluxo {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .fluxo-passo:nth-child(3) {
+    border-left: none;
+  }
+
+  .fluxo-trilho {
+    display: none;
+  }
+
+  .diferenciais {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .diferenciais > div:nth-child(3) {
+    border-left: none;
+    padding-left: 0;
   }
 }
 
@@ -233,15 +476,82 @@
     max-width: none;
   }
 
-  .grade-pilares,
   .faixa-cadastro {
     grid-template-columns: 1fr;
+  }
+
+  /* no celular, um lado da comparação de cada vez */
+  .comparar-abas {
+    display: flex;
+    gap: 6px;
+    padding: 5px;
+    margin-bottom: 14px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 999px;
+    background-color: var(--cor-fundo-alt);
+  }
+
+  .comparar-abas button {
+    flex: 1;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 999px;
+    background: none;
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--cor-texto);
+    cursor: pointer;
+  }
+
+  .comparar-abas button[aria-selected="true"] {
+    background-color: var(--cor-azul);
+    color: #fff;
+  }
+
+  .comparar-grade {
+    grid-template-columns: 1fr;
+  }
+
+  .comparar-grade[data-mostrar="logimind"] .manual,
+  .comparar-grade[data-mostrar="manual"] .logimind {
+    display: none;
+  }
+
+  .comparar-item.logimind {
+    border-left: none;
   }
 }
 
 @media (max-width: 560px) {
-  .grade-recursos {
+  .fluxo,
+  .diferenciais {
     grid-template-columns: 1fr;
+  }
+
+  .fluxo-passo + .fluxo-passo,
+  .diferenciais > div + div {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .fluxo-passo {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .fluxo-passo.ativo {
+    background: none;
+  }
+
+  .faixa-publico {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .faixa-janela {
+    width: 100%;
   }
 
   .hero-botoes .botao {
