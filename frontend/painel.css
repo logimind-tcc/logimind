@@ -314,11 +314,7 @@ body {
 .linha-nova td { background: rgba(79, 140, 255, 0.12); transition: background 1.5s; }
 .planilha-rodape { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 18px; }
 
-/* Rodapé */
-.rodape {
-  text-align: center; padding: 28px; color: var(--cor-suave); font-size: 0.85rem;
-  border-top: 3px solid var(--cor-azul); background: var(--cor-fundo);
-}
+/* Rodapé: usa o mesmo do site (global.css) */
 
 @media (prefers-reduced-motion: reduce) {
   .transportadora { transition: none; }
@@ -703,9 +699,9 @@ body {
   .conversa { height: 280px; }
 }
 
-/* no celular, o Logi do canto não cobre o texto do rodapé */
+/* no celular, o Logi do canto não cobre o fim do rodapé */
 @media (max-width: 640px) {
-  .rodape { padding: 24px 96px 28px 16px; text-align: left; }
+  .rodape { padding-bottom: 104px; }
 }
 
 /* escolher a voz do Logi */
