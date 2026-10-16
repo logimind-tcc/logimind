@@ -8,6 +8,26 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&display=swap">
   <link rel="stylesheet" href="style.css">
+  <script>
+    // Dentro do site (página Jogo), o jogo ocupa todo o espaço, sem bordas nem texto embaixo
+    if (window.self !== window.top) document.documentElement.classList.add("no-site");
+  </script>
+  <style>
+    .no-site, .no-site body { width: 100%; height: 100%; margin: 0; }
+    .no-site body { padding: 0; gap: 0; background: #000; position: relative; }
+    .no-site #tela {
+      width: min(100vw, calc(100vh * 16 / 9));
+      max-width: none;
+      height: auto;
+      border: 0;
+    }
+    .no-site .barra {
+      position: absolute; right: 12px; bottom: 12px;
+      width: auto; max-width: none; opacity: 0.35; transition: opacity 0.2s;
+    }
+    .no-site .barra:hover, .no-site .barra:focus-within { opacity: 1; }
+    .no-site .dica { display: none; }
+  </style>
 </head>
 <body>
   <canvas id="tela" width="1280" height="720" tabindex="0" aria-label="Jogo System Anomaly"></canvas>

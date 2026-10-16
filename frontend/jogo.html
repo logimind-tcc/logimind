@@ -79,6 +79,13 @@
     <script>
       // Já deixa o jogo pronto para o teclado (ENTER, setas, WASD)
       const jogo = document.getElementById("jogoFrame");
+      // o jogo preenche exatamente o espaço embaixo do cabeçalho
+      const medirCabecalho = () => {
+        const cab = document.querySelector(".cabecalho");
+        if (cab) document.documentElement.style.setProperty("--altura-cabecalho", cab.offsetHeight + "px");
+      };
+      medirCabecalho();
+      window.addEventListener("resize", medirCabecalho);
       const focarJogo = () => {
         try {
           jogo.contentWindow.focus();

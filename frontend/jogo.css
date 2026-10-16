@@ -3,15 +3,16 @@
    O jogo ocupa a tela toda embaixo do cabeçalho, sem rolar.
    ========================================================== */
 .pagina-jogo {
-  background-color: #07080c;
+  background-color: #000;
+  overflow: hidden;              /* só o cabeçalho e o jogo: nada para rolar */
 }
 
+/* --altura-cabecalho é medida pelo jogo.html (o cabeçalho muda de altura no celular) */
 .jogo-palco {
   display: flex;
-  height: calc(100vh - 73px);
-  height: calc(100dvh - 73px);
-  min-height: 420px;
-  background-color: #07080c;
+  height: calc(100vh - var(--altura-cabecalho, 73px));
+  height: calc(100dvh - var(--altura-cabecalho, 73px));
+  background-color: #000;
 }
 
 .jogo-frame {
